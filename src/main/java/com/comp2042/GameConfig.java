@@ -22,4 +22,15 @@ public final class GameConfig {
     public static final int SPAWN_Y = 0;
 
     private GameConfig() {}
+
+    // Offset for positioning the falling brick panel relative to the game board
+    public static final int ACTIVE_BRICK_OFFSET_X = 0;
+    public static final int ACTIVE_BRICK_OFFSET_Y = -42;
+
+    // How fast the brick drops (ms)
+    public static final int DROP_SPEED_MS = 400;
+
+    // Dynamic visible row offset (same as HIDDEN_ROWS but clearer name)
+    public static final int VISIBLE_ROW_OFFSET = HIDDEN_ROWS;
+
 }
