@@ -1,5 +1,8 @@
 package com.comp2042;
 
+import javafx.scene.paint.Color;
+
+
 public final class GameConfig {
 
     // === Board Size ===
@@ -32,5 +35,17 @@ public final class GameConfig {
 
     // Dynamic visible row offset (same as HIDDEN_ROWS but clearer name)
     public static final int VISIBLE_ROW_OFFSET = HIDDEN_ROWS;
+
+    public static final Color[] COLORS = {
+            Color.TRANSPARENT,  // 0
+            Color.AQUA,         // 1
+            Color.BLUEVIOLET,   // 2
+            Color.DARKGREEN,    // 3
+            Color.YELLOW,       // 4
+            Color.RED,          // 5
+            Color.BEIGE,        // 6
+            Color.BURLYWOOD     // 7
+    };
+
 
 }

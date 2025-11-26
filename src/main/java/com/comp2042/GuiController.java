@@ -27,6 +27,9 @@ import static com.comp2042.GameConfig.*;
 
 import javafx.scene.control.Label;
 
+import static com.comp2042.GameConfig.COLORS;
+
+
 public class GuiController implements Initializable {
 
     @FXML private GridPane gamePanel;
@@ -161,19 +164,13 @@ public class GuiController implements Initializable {
         }
     }
 
-    private Paint getFillColor(int i) {
-        switch (i) {
-            case 0: return Color.TRANSPARENT;
-            case 1: return Color.AQUA;
-            case 2: return Color.BLUEVIOLET;
-            case 3: return Color.DARKGREEN;
-            case 4: return Color.YELLOW;
-            case 5: return Color.RED;
-            case 6: return Color.BEIGE;
-            case 7: return Color.BURLYWOOD;
-            default: return Color.WHITE;
+    private Paint getFillColor(int id) {
+        if (id < 0 || id >= COLORS.length) {
+            return Color.WHITE;
         }
+        return COLORS[id];
     }
+
 
     private void refreshBrick(ViewData brick) {
         if (!isPause.get()) {
