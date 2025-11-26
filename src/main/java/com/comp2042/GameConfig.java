@@ -36,6 +36,11 @@ public final class GameConfig {
     // Dynamic visible row offset (same as HIDDEN_ROWS but clearer name)
     public static final int VISIBLE_ROW_OFFSET = HIDDEN_ROWS;
 
+    public static final int BASE_DROP_SPEED_MS = 400;
+    public static final int LINES_PER_LEVEL = 10;
+    public static final double LEVEL_SPEED_MULTIPLIER = 0.10;
+
+
     public static final Color[] COLORS = {
             Color.TRANSPARENT,  // 0
             Color.AQUA,         // 1
