@@ -15,7 +15,6 @@ public final class GameConfig {
     // Gaps between grid cells
     public static final int BOARD_GAP = 1;
 
-    // Tweak this if your brickPanel appears too high/low
     public static final int BRICK_PANEL_OFFSET_Y = -42;
 
     // Center spawn
