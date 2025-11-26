@@ -39,8 +39,8 @@ public class GuiController implements Initializable {
     private Rectangle[][] displayMatrix;
     private InputEventListener eventListener;
     private Rectangle[][] rectangles;
-    private Timeline timeLine;
 
+    private Timeline timeLine;
     private final BooleanProperty isPause = new SimpleBooleanProperty();
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
@@ -65,23 +65,21 @@ public class GuiController implements Initializable {
         gamePanel.setOnKeyPressed(event -> {
             if (!isPause.get() && !isGameOver.get()) {
 
-                if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.A) {
+                if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.A)
                     refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
-                }
-                if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.D) {
+
+                if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.D)
                     refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
-                }
-                if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.W) {
+
+                if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.W)
                     refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
-                }
-                if (event.getCode() == KeyCode.DOWN || event.getCode() == KeyCode.S) {
+
+                if (event.getCode() == KeyCode.DOWN || event.getCode() == KeyCode.S)
                     moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
-                }
             }
 
-            if (event.getCode() == KeyCode.N) {
+            if (event.getCode() == KeyCode.N)
                 newGame(null);
-            }
         });
 
         gameOverPanel.setVisible(false);
@@ -91,6 +89,7 @@ public class GuiController implements Initializable {
 
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
 
+        // ===== Refactor B applied here =====
         for (int i = HIDDEN_ROWS; i < boardMatrix.length; i++) {
             for (int j = 0; j < boardMatrix[i].length; j++) {
 
@@ -107,6 +106,7 @@ public class GuiController implements Initializable {
 
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+
                 Rectangle r = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 r.setFill(getFillColor(brick.getBrickData()[i][j]));
 
@@ -178,21 +178,21 @@ public class GuiController implements Initializable {
     private void refreshBrick(ViewData brick) {
         if (!isPause.get()) {
             updateBrickPanelPosition(brick);
-            for (int i = 0; i < brick.getBrickData().length; i++) {
-                for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+
+            for (int i = 0; i < brick.getBrickData().length; i++)
+                for (int j = 0; j < brick.getBrickData()[i].length; j++)
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
-                }
-            }
+
             renderNextPiece(brick.getNextBrickData());
         }
     }
 
     public void refreshGameBackground(int[][] board) {
-        for (int i = HIDDEN_ROWS; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
+
+        // ===== Refactor B applied here too =====
+        for (int i = HIDDEN_ROWS; i < board.length; i++)
+            for (int j = 0; j < board[i].length; j++)
                 setRectangleData(board[i][j], displayMatrix[i][j]);
-            }
-        }
     }
 
     private void setRectangleData(int color, Rectangle r) {
