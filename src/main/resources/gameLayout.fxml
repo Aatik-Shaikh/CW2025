@@ -6,21 +6,36 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
+
 <Pane fx:controller="com.comp2042.GuiController"
       xmlns:fx="http://javafx.com/fxml">
-    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+
+    <!-- Active falling piece -->
+    <GridPane fx:id="brickPanel"/>
+
+    <!-- SCORE LABEL (missing before) -->
+    <Label fx:id="scoreLabel"
+           text="Score: 0"
+           layoutX="280"
+           layoutY="10"
+           style="-fx-font-size: 18px; -fx-text-fill: white;" />
+
+    <!-- Main game board -->
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
         <center>
-            <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
+            <GridPane fx:id="gamePanel" layoutY="30" layoutX="40"/>
         </center>
     </BorderPane>
 
+    <!-- Notifications + game over panel -->
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
     </Group>
+
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>
+
 </Pane>
