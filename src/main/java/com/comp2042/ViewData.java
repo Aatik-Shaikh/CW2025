@@ -7,11 +7,11 @@ public final class ViewData {
     private final int yPosition;
     private final int[][] nextBrickData;
 
-    public ViewData(int[][] brickData, int xPosition, int yPosition, int[][] nextBrickData) {
-        this.brickData = brickData;
-        this.xPosition = xPosition;
-        this.yPosition = yPosition;
-        this.nextBrickData = nextBrickData;
+    public ViewData(int[][] brickData, int x, int y, int[][] nextBrickData) {
+        this.brickData = MatrixOperations.copy(brickData);
+        this.xPosition = x;
+        this.yPosition = y;
+        this.nextBrickData = MatrixOperations.copy(nextBrickData);
     }
 
     public int[][] getBrickData() {

@@ -38,4 +38,16 @@
         <URL value="@window_style.css"/>
     </stylesheets>
 
+    <Label text="Next:"
+           layoutX="260"
+           layoutY="50"
+           style="-fx-font-size: 18px; -fx-text-fill: white;" />
+
+    <GridPane fx:id="nextPiecePanel"
+              layoutX="260"
+              layoutY="90"
+              hgap="1"
+              vgap="1"/>
+
+
 </Pane>

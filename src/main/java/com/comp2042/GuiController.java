@@ -27,7 +27,6 @@ import static com.comp2042.GameConfig.*;
 
 import javafx.scene.control.Label;
 
-
 public class GuiController implements Initializable {
 
     @FXML
@@ -45,6 +44,8 @@ public class GuiController implements Initializable {
     @FXML
     private Label scoreLabel;
 
+    @FXML
+    private GridPane nextPiecePanel;   // ADDED FOR NEXT PIECE PREVIEW
 
     private Rectangle[][] displayMatrix;
     private InputEventListener eventListener;
@@ -64,6 +65,11 @@ public class GuiController implements Initializable {
 
         brickPanel.setHgap(BOARD_GAP);
         brickPanel.setVgap(BOARD_GAP);
+
+        if (nextPiecePanel != null) {
+            nextPiecePanel.setHgap(BOARD_GAP);
+            nextPiecePanel.setVgap(BOARD_GAP);
+        }
 
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
@@ -118,7 +124,6 @@ public class GuiController implements Initializable {
 
                 displayMatrix[i][j] = rectangle;
 
-                // dynamic removal of top rows: i - HIDDEN_ROWS
                 gamePanel.add(rectangle, j, i - HIDDEN_ROWS);
             }
         }
@@ -140,6 +145,9 @@ public class GuiController implements Initializable {
         // Apply positioning
         updateBrickPanelPosition(brick);
 
+        // RENDER NEXT PIECE FOR THE FIRST TIME
+        renderNextPiece(brick.getNextBrickData());
+
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(400),
                 ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
@@ -147,6 +155,32 @@ public class GuiController implements Initializable {
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
     }
+
+
+    /* ============================================================
+       RENDER NEXT PIECE PREVIEW
+       ============================================================ */
+    private void renderNextPiece(int[][] nextData) {
+        if (nextPiecePanel == null || nextData == null) return;
+
+        nextPiecePanel.getChildren().clear();
+
+        for (int row = 0; row < nextData.length; row++) {
+            for (int col = 0; col < nextData[row].length; col++) {
+
+                Rectangle r = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+
+                if (nextData[row][col] != 0) {
+                    r.setFill(getFillColor(nextData[row][col]));
+                } else {
+                    r.setFill(Color.TRANSPARENT);
+                }
+
+                nextPiecePanel.add(r, col, row);
+            }
+        }
+    }
+
 
     // Cleaned-up brickPanel position logic using GameConfig values
     private void updateBrickPanelPosition(ViewData brick) {
@@ -186,6 +220,9 @@ public class GuiController implements Initializable {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
                 }
             }
+
+            // UPDATE NEXT PIECE EVERY TIME BRICK CHANGES
+            renderNextPiece(brick.getNextBrickData());
         }
     }
 
@@ -226,7 +263,6 @@ public class GuiController implements Initializable {
     }
 
     public void bindScore(IntegerProperty integerProperty) {
-        // originally empty — leave as-is until Score UI refactor step
         scoreLabel.textProperty().bind(integerProperty.asString("Score: %d"));
     }
 

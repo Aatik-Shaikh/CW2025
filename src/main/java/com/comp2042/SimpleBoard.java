@@ -14,12 +14,19 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
+    private Brick nextBrick;
+
+
     public SimpleBoard(int width, int height) {
         currentGameMatrix = new int[GameConfig.ROWS][GameConfig.COLS];
         brickGenerator = new RandomBrickGenerator();
         brickRotator = new BrickRotator();
         score = new Score();
+
+        // Initialize next piece queue (Step 3)
+        nextBrick = brickGenerator.getBrick();
     }
+
 
     private boolean tryMove(int dx, int dy) {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -81,11 +88,18 @@ public class SimpleBoard implements Board {
     Brick lifecycle;
     @Override
     public boolean createNewBrick() {
-        Brick currentBrick = brickGenerator.getBrick();
+
+        // Use the queued next brick
+        Brick currentBrick = nextBrick;
         brickRotator.setBrick(currentBrick);
 
+        // Spawn at the configured position
         currentOffset = new Point(GameConfig.SPAWN_X, GameConfig.SPAWN_Y);
 
+        // Queue the next one
+        nextBrick = brickGenerator.getBrick();
+
+        // Check collision at spawn => game over
         return MatrixOperations.intersect(
                 currentGameMatrix,
                 brickRotator.getCurrentShape(),
@@ -93,6 +107,7 @@ public class SimpleBoard implements Board {
                 currentOffset.y
         );
     }
+
 
     @Override
     public void mergeBrickToBackground() {
@@ -123,9 +138,10 @@ public class SimpleBoard implements Board {
                 brickRotator.getCurrentShape(),
                 currentOffset.x,
                 currentOffset.y,
-                brickGenerator.getNextBrick().getShapeMatrix().get(0)
+                nextBrick.getShapeMatrix().get(0)  // Preview shape
         );
     }
+
 
     @Override
     public Score getScore() {
