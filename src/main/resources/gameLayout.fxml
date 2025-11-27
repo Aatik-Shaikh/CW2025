@@ -21,7 +21,7 @@
                 </center>
             </BorderPane>
 
-            <VBox layoutX="435" layoutY="50" spacing="10" alignment="TOP_CENTER" prefWidth="140"
+            <VBox layoutX="435" layoutY="50" spacing="10" alignment="TOP_CENTER" prefWidth="180" minHeight="400"
                   style="-fx-background-color: rgba(0, 255, 255, 0.15); -fx-background-radius: 10; -fx-border-color: #00FFFF; -fx-border-radius: 10; -fx-border-width: 2; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0, 255, 255, 0.5), 10, 0, 0, 0);">
 
                 <Label fx:id="scoreLabel" text="Score: 0" style="-fx-text-fill: white; -fx-font-size: 18px;" />
@@ -34,7 +34,8 @@
                 <Separator style="-fx-background-color: #00FFFF; -fx-opacity: 0.5;"/>
 
                 <Label text="Next:" style="-fx-text-fill: white; -fx-font-size: 18px;" />
-                <GridPane fx:id="nextPiecePanel" hgap="1" vgap="1" alignment="CENTER"/>
+
+                <VBox fx:id="nextPiecePanel" alignment="CENTER" spacing="20" style="-fx-padding: 10 0 0 0;" />
 
             </VBox>
 

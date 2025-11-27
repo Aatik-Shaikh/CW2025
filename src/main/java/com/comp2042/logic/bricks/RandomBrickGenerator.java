@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;
-
     private final Deque<Brick> nextBricks = new ArrayDeque<>();
 
     public RandomBrickGenerator() {
@@ -21,13 +21,17 @@ public class RandomBrickGenerator implements BrickGenerator {
         brickList.add(new SBrick());
         brickList.add(new TBrick());
         brickList.add(new ZBrick());
-        nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
-        nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
+
+        // Initial fill: ensure we have at least 5 bricks to start
+        while (nextBricks.size() < 5) {
+            nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
+        }
     }
 
     @Override
     public Brick getBrick() {
-        if (nextBricks.size() <= 1) {
+        // If queue gets low, refill it to maintain the preview buffer
+        if (nextBricks.size() <= 4) {
             nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         }
         return nextBricks.poll();
@@ -36,5 +40,15 @@ public class RandomBrickGenerator implements BrickGenerator {
     @Override
     public Brick getNextBrick() {
         return nextBricks.peek();
+    }
+
+    @Override
+    public List<Brick> getNextBricks(int count) {
+        // Safety: ensure we have enough bricks for the requested count
+        while (nextBricks.size() < count) {
+            nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
+        }
+        // Return the next 'count' bricks without removing them from the queue
+        return nextBricks.stream().limit(count).collect(Collectors.toList());
     }
 }
