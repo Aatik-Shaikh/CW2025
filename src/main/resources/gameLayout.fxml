@@ -16,6 +16,9 @@
                 <center>
                     <Pane fx:id="gameZone">
                         <GridPane fx:id="gamePanel"/>
+
+                        <GridPane fx:id="ghostPanel"/>
+
                         <GridPane fx:id="brickPanel"/>
                     </Pane>
                 </center>

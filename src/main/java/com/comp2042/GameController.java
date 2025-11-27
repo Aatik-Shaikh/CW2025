@@ -5,8 +5,6 @@ public class GameController implements InputEventListener {
     private Board board = new SimpleBoard(GameConfig.ROWS, GameConfig.COLS);
     private final GuiController viewGuiController;
 
-
-
     public GameController(GuiController c) {
         viewGuiController = c;
 
@@ -30,49 +28,31 @@ public class GameController implements InputEventListener {
         setupSpeedAdjustment();
     }
 
-    /**
-     * Makes the falling speed increase automatically whenever the level increases.
-     */
     private void setupSpeedAdjustment() {
         board.getScore().levelProperty().addListener((obs, oldVal, newVal) -> {
-
-            // Level increases → improve drop speed
             double multiplier = 1.0 + (newVal.intValue() - 1) * GameConfig.LEVEL_SPEED_MULTIPLIER;
-
-            // Increase timeline speed
             viewGuiController.getTimeline().setRate(multiplier);
         });
     }
 
     @Override
     public DownData onDownEvent(MoveEvent event) {
-
         boolean canMove = board.moveBrickDown();
         ClearRow clearRow = null;
 
         if (!canMove) {
-
-            // Merge falling piece into background
             board.mergeBrickToBackground();
-
-            // Clear any filled rows
             clearRow = board.clearRows();
 
             if (clearRow.getLinesRemoved() > 0) {
-
-                // Add score bonus
                 board.getScore().add(clearRow.getScoreBonus());
-
-                // Add lines cleared + update level automatically
                 board.getScore().addLines(clearRow.getLinesRemoved());
             }
 
-            // Spawn next brick — if overlapping → game over
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
             }
 
-            // Redraw the background matrix
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
 
         } else {
@@ -81,6 +61,43 @@ public class GameController implements InputEventListener {
                 board.getScore().add(1);
             }
         }
+
+        return new DownData(clearRow, board.getViewData());
+    }
+
+    @Override
+    public DownData onHardDropEvent(MoveEvent event) {
+        // [MODIFIED] 1. Capture state BEFORE dropping to draw the trail
+        ViewData currentView = board.getViewData();
+        int startX = currentView.getxPosition();
+        int startY = currentView.getyPosition();
+        int[][] shape = currentView.getBrickData();
+
+        // 2. Drop instantly
+        int linesDropped = board.dropBrickToBottom();
+
+        // 3. Trigger Trail Effect
+        if (linesDropped > 0) {
+            viewGuiController.showHardDropTrail(startX, startY, linesDropped, shape);
+        }
+
+        // 4. Score bonus
+        board.getScore().add(linesDropped * 2);
+
+        // 5. Perform Lock Logic
+        board.mergeBrickToBackground();
+        ClearRow clearRow = board.clearRows();
+
+        if (clearRow.getLinesRemoved() > 0) {
+            board.getScore().add(clearRow.getScoreBonus());
+            board.getScore().addLines(clearRow.getLinesRemoved());
+        }
+
+        if (board.createNewBrick()) {
+            viewGuiController.gameOver();
+        }
+
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
 
         return new DownData(clearRow, board.getViewData());
     }
@@ -106,11 +123,7 @@ public class GameController implements InputEventListener {
     @Override
     public void createNewGame() {
         board.newGame();
-
-        // Reset display
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
-
-        // Reset speed to level 1
         viewGuiController.getTimeline().setRate(1.0);
     }
 }

@@ -28,16 +28,10 @@ public class SimpleBoard implements Board {
         nextBrick = brickGenerator.getBrick();
     }
 
-    /**
-     * Helper method: checks if a shape can be placed at (x, y)
-     */
     private boolean canPlace(int[][] matrix, int[][] shape, int x, int y) {
         return !MatrixOperations.intersect(matrix, shape, x, y);
     }
 
-    /**
-     * Clean movement helper (used for left, right, down)
-     */
     private boolean tryMove(int dx, int dy) {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
 
@@ -67,57 +61,48 @@ public class SimpleBoard implements Board {
         return tryMove(1, 0);
     }
 
-    /**
-     * Improved rotation with soft wall-kicks.
-     */
     @Override
     public boolean rotateLeftBrick() {
         int[][] board = MatrixOperations.copy(currentGameMatrix);
-
         NextShapeInfo nextShape = brickRotator.getNextShape();
         int[][] rotated = nextShape.getShape();
-
         int x = currentOffset.x;
         int y = currentOffset.y;
 
-        // 1. Try rotate in place
         if (canPlace(board, rotated, x, y)) {
             brickRotator.setCurrentShape(nextShape.getPosition());
             return true;
         }
-
-        // 2. Try wall-kick LEFT
         if (canPlace(board, rotated, x - 1, y)) {
             currentOffset.translate(-1, 0);
             brickRotator.setCurrentShape(nextShape.getPosition());
             return true;
         }
-
-        // 3. Try wall-kick RIGHT
         if (canPlace(board, rotated, x + 1, y)) {
             currentOffset.translate(1, 0);
             brickRotator.setCurrentShape(nextShape.getPosition());
             return true;
         }
-
-        // No rotation possible
         return false;
     }
 
     @Override
-    public boolean createNewBrick() {
+    public int dropBrickToBottom() {
+        int lines = 0;
+        // Keep moving down until we can't anymore
+        while (tryMove(0, 1)) {
+            lines++;
+        }
+        return lines;
+    }
 
-        // Use queued next brick
+    @Override
+    public boolean createNewBrick() {
         Brick currentBrick = nextBrick;
         brickRotator.setBrick(currentBrick);
-
-        // Spawn at configured position
         currentOffset = new Point(GameConfig.SPAWN_X, GameConfig.SPAWN_Y);
-
-        // Queue the next brick
         nextBrick = brickGenerator.getBrick();
 
-        // Collision at spawn => game over
         return MatrixOperations.intersect(
                 currentGameMatrix,
                 brickRotator.getCurrentShape(),
@@ -150,7 +135,6 @@ public class SimpleBoard implements Board {
 
     @Override
     public ViewData getViewData() {
-        // [MODIFIED] Fetch the next 3 bricks for the preview
         List<Brick> nextBricks = brickGenerator.getNextBricks(3);
         List<int[][]> nextShapes = new ArrayList<>();
 
@@ -158,11 +142,18 @@ public class SimpleBoard implements Board {
             nextShapes.add(b.getShapeMatrix().get(0));
         }
 
+        // Ghost calculation
+        int ghostY = currentOffset.y;
+        while (canPlace(currentGameMatrix, brickRotator.getCurrentShape(), currentOffset.x, ghostY + 1)) {
+            ghostY++;
+        }
+
         return new ViewData(
                 brickRotator.getCurrentShape(),
                 currentOffset.x,
                 currentOffset.y,
-                nextShapes // Pass list of 3 shapes
+                ghostY,
+                nextShapes
         );
     }
 

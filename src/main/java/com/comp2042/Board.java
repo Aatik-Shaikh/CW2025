@@ -12,6 +12,8 @@ public interface Board {
 
     boolean createNewBrick();
 
+    int dropBrickToBottom();
+
     int[][] getBoardMatrix();
 
     ViewData getViewData();

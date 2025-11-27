@@ -8,12 +8,14 @@ public final class ViewData {
     private final int[][] brickData;
     private final int xPosition;
     private final int yPosition;
-    private final List<int[][]> nextBricksData; // [MODIFIED] Now holds a list of matrices
+    private final int ghostYPosition; // [NEW] Holds the predicted drop Y coordinate
+    private final List<int[][]> nextBricksData;
 
-    public ViewData(int[][] brickData, int x, int y, List<int[][]> nextBricksData) {
+    public ViewData(int[][] brickData, int x, int y, int ghostY, List<int[][]> nextBricksData) {
         this.brickData = MatrixOperations.copy(brickData);
         this.xPosition = x;
         this.yPosition = y;
+        this.ghostYPosition = ghostY; // [NEW]
 
         // Deep copy the list of matrices
         this.nextBricksData = new ArrayList<>();
@@ -34,8 +36,11 @@ public final class ViewData {
         return yPosition;
     }
 
+    public int getGhostYPosition() {
+        return ghostYPosition;
+    }
+
     public List<int[][]> getNextBrickData() {
-        // Return a safe copy
         List<int[][]> copy = new ArrayList<>();
         for (int[][] matrix : nextBricksData) {
             copy.add(MatrixOperations.copy(matrix));
