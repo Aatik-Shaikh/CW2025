@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -31,6 +32,7 @@ public class GuiController implements Initializable {
     @FXML private GridPane gamePanel;
     @FXML private Group groupNotification;
     @FXML private GridPane brickPanel;
+    @FXML private Pane gameZone;
     @FXML private GameOverPanel gameOverPanel;
 
     @FXML private Label scoreLabel;
@@ -58,10 +60,13 @@ public class GuiController implements Initializable {
     // ======================
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Font.loadFont(
-                getClass().getClassLoader().getResource("digital.ttf").toExternalForm(),
-                38
-        );
+        // Load font safely
+        if (getClass().getClassLoader().getResource("digital.ttf") != null) {
+            Font.loadFont(
+                    getClass().getClassLoader().getResource("digital.ttf").toExternalForm(),
+                    38
+            );
+        }
 
         // Apply spacing
         gamePanel.setHgap(BOARD_GAP);
@@ -120,7 +125,7 @@ public class GuiController implements Initializable {
         // Allocate display grid for board
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
 
-        for (int i = HIDDEN_ROWS; i < boardMatrix.length; i++) {
+        for (int i = VISIBLE_ROW_OFFSET; i < boardMatrix.length; i++) {
             for (int j = 0; j < boardMatrix[i].length; j++) {
 
                 Rectangle r = new Rectangle(BRICK_SIZE, BRICK_SIZE);
@@ -148,6 +153,23 @@ public class GuiController implements Initializable {
         updateBrickPanelPosition(brick);
         renderNextPiece(brick.getNextBrickData());
 
+        // --- SIZE & CLIPPING LOGIC ---
+
+        // 1. Calculate the EXACT size of the visible board
+        double boardWidth = COLS * BRICK_SIZE + (COLS - 1) * BOARD_GAP;
+        double boardHeight = (ROWS - VISIBLE_ROW_OFFSET) * BRICK_SIZE + (ROWS - VISIBLE_ROW_OFFSET - 1) * BOARD_GAP;
+
+        // 2. FORCE the gameZone to this size so the BorderPane doesn't wiggle
+        gameZone.setPrefSize(boardWidth, boardHeight);
+        gameZone.setMinSize(boardWidth, boardHeight);
+        gameZone.setMaxSize(boardWidth, boardHeight);
+
+        // 3. Clip content that falls outside (like bricks moving out of bounds)
+        Rectangle clip = new Rectangle(0, 0, boardWidth, boardHeight);
+        gameZone.setClip(clip);
+
+        // -----------------------------
+
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(DROP_SPEED_MS),
                 ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
@@ -161,19 +183,16 @@ public class GuiController implements Initializable {
     // POSITIONING
     // ======================
     private void updateBrickPanelPosition(ViewData brick) {
+        // Simple relative positioning
 
-        double x = gamePanel.getLayoutX()
-                + ACTIVE_BRICK_OFFSET_X
-                + brick.getxPosition() * (BRICK_SIZE + BOARD_GAP);
+        double x = brick.getxPosition() * (BRICK_SIZE + BOARD_GAP);
 
-        double y = gamePanel.getLayoutY()
-                + ACTIVE_BRICK_OFFSET_Y
-                + brick.getyPosition() * (BRICK_SIZE + BOARD_GAP);
+        // Subtract VISIBLE_ROW_OFFSET (2) so rows 0-1 are "above" the board (negative Y)
+        double y = (brick.getyPosition() - VISIBLE_ROW_OFFSET) * (BRICK_SIZE + BOARD_GAP);
 
         brickPanel.setLayoutX(x);
         brickPanel.setLayoutY(y);
     }
-
 
     // ======================
     // NEXT PIECE DISPLAY
@@ -230,7 +249,7 @@ public class GuiController implements Initializable {
 
     public void refreshGameBackground(int[][] board) {
 
-        for (int i = HIDDEN_ROWS; i < board.length; i++) {
+        for (int i = VISIBLE_ROW_OFFSET; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 setRectangleData(board[i][j], displayMatrix[i][j]);
             }
@@ -309,20 +328,15 @@ public class GuiController implements Initializable {
     // ======================
     // REQUIRED BY GameController
     // ======================
-
-    // Allows GameController to register itself (input event handler)
     public void setEventListener(InputEventListener listener) {
         this.eventListener = listener;
     }
 
-    // Allows GameController to change falling speed based on level
     public Timeline getTimeline() {
         return timeLine;
     }
-
 
     public void pauseGame(ActionEvent actionEvent) {
         gamePanel.requestFocus();
     }
 }
-
