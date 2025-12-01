@@ -10,77 +10,74 @@ import java.util.List;
 
 public class SimpleBoard implements Board {
 
-    private final BrickGenerator brickGenerator;
-    private final BrickRotator brickRotator;
-    private int[][] currentGameMatrix;
-    private Point currentOffset;
+    private final BrickGenerator gen;
+    private final BrickRotator rot;
+    private int[][] matrix;
+    private Point p;
     private final Score score;
 
-    private Brick nextBrick;
+    // [FIX] Removed private Brick next; variable
 
     public SimpleBoard(int width, int height) {
-        currentGameMatrix = new int[GameConfig.ROWS][GameConfig.COLS];
-        brickGenerator = new RandomBrickGenerator();
-        brickRotator = new BrickRotator();
+        matrix = new int[GameConfig.ROWS][GameConfig.COLS];
+        gen = new RandomBrickGenerator();
+        rot = new BrickRotator();
         score = new Score();
 
-        // Initialize next piece queue
-        nextBrick = brickGenerator.getBrick();
+        // [FIX] Removed next = gen.getBrick();
     }
 
-    private boolean canPlace(int[][] matrix, int[][] shape, int x, int y) {
-        return !MatrixOperations.intersect(matrix, shape, x, y);
+    private boolean checkCollision(int[][] m, int[][] shape, int x, int y) {
+        return !MatrixOperations.intersect(m, shape, x, y);
     }
 
-    private boolean tryMove(int dx, int dy) {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
+    private boolean attemptMove(int dx, int dy) {
+        int[][] current = MatrixOperations.copy(matrix);
+        Point nextP = new Point(p);
+        nextP.translate(dx, dy);
 
-        Point p = new Point(currentOffset);
-        p.translate(dx, dy);
-
-        if (!canPlace(currentMatrix, brickRotator.getCurrentShape(), p.x, p.y)) {
+        if (!checkCollision(current, rot.getCurrentShape(), nextP.x, nextP.y)) {
             return false;
         }
-
-        currentOffset = p;
+        p = nextP;
         return true;
     }
 
     @Override
     public boolean moveBrickDown() {
-        return tryMove(0, 1);
+        return attemptMove(0, 1);
     }
 
     @Override
     public boolean moveBrickLeft() {
-        return tryMove(-1, 0);
+        return attemptMove(-1, 0);
     }
 
     @Override
     public boolean moveBrickRight() {
-        return tryMove(1, 0);
+        return attemptMove(1, 0);
     }
 
     @Override
     public boolean rotateLeftBrick() {
-        int[][] board = MatrixOperations.copy(currentGameMatrix);
-        NextShapeInfo nextShape = brickRotator.getNextShape();
-        int[][] rotated = nextShape.getShape();
-        int x = currentOffset.x;
-        int y = currentOffset.y;
+        int[][] board = MatrixOperations.copy(matrix);
+        NextShapeInfo info = rot.getNextShape();
+        int[][] rShape = info.getShape();
+        int x = p.x;
+        int y = p.y;
 
-        if (canPlace(board, rotated, x, y)) {
-            brickRotator.setCurrentShape(nextShape.getPosition());
+        if (checkCollision(board, rShape, x, y)) {
+            rot.setCurrentShape(info.getPosition());
             return true;
         }
-        if (canPlace(board, rotated, x - 1, y)) {
-            currentOffset.translate(-1, 0);
-            brickRotator.setCurrentShape(nextShape.getPosition());
+        if (checkCollision(board, rShape, x - 1, y)) {
+            p.translate(-1, 0);
+            rot.setCurrentShape(info.getPosition());
             return true;
         }
-        if (canPlace(board, rotated, x + 1, y)) {
-            currentOffset.translate(1, 0);
-            brickRotator.setCurrentShape(nextShape.getPosition());
+        if (checkCollision(board, rShape, x + 1, y)) {
+            p.translate(1, 0);
+            rot.setCurrentShape(info.getPosition());
             return true;
         }
         return false;
@@ -88,73 +85,54 @@ public class SimpleBoard implements Board {
 
     @Override
     public int dropBrickToBottom() {
-        int lines = 0;
-        // Keep moving down until we can't anymore
-        while (tryMove(0, 1)) {
-            lines++;
+        int dropped = 0;
+        while (attemptMove(0, 1)) {
+            dropped++;
         }
-        return lines;
+        return dropped;
     }
 
     @Override
     public boolean createNewBrick() {
-        Brick currentBrick = nextBrick;
-        brickRotator.setBrick(currentBrick);
-        currentOffset = new Point(GameConfig.SPAWN_X, GameConfig.SPAWN_Y);
-        nextBrick = brickGenerator.getBrick();
-
-        return MatrixOperations.intersect(
-                currentGameMatrix,
-                brickRotator.getCurrentShape(),
-                currentOffset.x,
-                currentOffset.y
-        );
+        // [FIX] Get brick directly from generator
+        Brick current = gen.getBrick();
+        rot.setBrick(current);
+        p = new Point(GameConfig.SPAWN_X, GameConfig.SPAWN_Y);
+        return MatrixOperations.intersect(matrix, rot.getCurrentShape(), p.x, p.y);
     }
 
     @Override
     public void mergeBrickToBackground() {
-        currentGameMatrix = MatrixOperations.merge(
-                currentGameMatrix,
-                brickRotator.getCurrentShape(),
-                currentOffset.x,
-                currentOffset.y
-        );
+        matrix = MatrixOperations.merge(matrix, rot.getCurrentShape(), p.x, p.y);
     }
 
     @Override
     public ClearRow clearRows() {
-        ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
-        currentGameMatrix = clearRow.getNewMatrix();
-        return clearRow;
+        ClearRow result = MatrixOperations.checkRemoving(matrix);
+        matrix = result.getNewMatrix();
+        return result;
     }
 
     @Override
     public int[][] getBoardMatrix() {
-        return currentGameMatrix;
+        return matrix;
     }
 
     @Override
     public ViewData getViewData() {
-        List<Brick> nextBricks = brickGenerator.getNextBricks(3);
-        List<int[][]> nextShapes = new ArrayList<>();
+        List<Brick> upcoming = gen.getNextBricks(3);
+        List<int[][]> shapes = new ArrayList<>();
 
-        for (Brick b : nextBricks) {
-            nextShapes.add(b.getShapeMatrix().get(0));
+        for (Brick b : upcoming) {
+            shapes.add(b.getShapeMatrix().get(0));
         }
 
-        // Ghost calculation
-        int ghostY = currentOffset.y;
-        while (canPlace(currentGameMatrix, brickRotator.getCurrentShape(), currentOffset.x, ghostY + 1)) {
+        int ghostY = p.y;
+        while (checkCollision(matrix, rot.getCurrentShape(), p.x, ghostY + 1)) {
             ghostY++;
         }
 
-        return new ViewData(
-                brickRotator.getCurrentShape(),
-                currentOffset.x,
-                currentOffset.y,
-                ghostY,
-                nextShapes
-        );
+        return new ViewData(rot.getCurrentShape(), p.x, p.y, ghostY, shapes);
     }
 
     @Override
@@ -164,7 +142,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public void newGame() {
-        currentGameMatrix = new int[GameConfig.ROWS][GameConfig.COLS];
+        matrix = new int[GameConfig.ROWS][GameConfig.COLS];
         score.reset();
         createNewBrick();
     }
