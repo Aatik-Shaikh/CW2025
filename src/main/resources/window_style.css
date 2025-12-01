@@ -1,15 +1,14 @@
-/* [EXISTING] Backgrounds */
 .game-background {
     -fx-background-image: url("night_sky.jpg");
     -fx-background-size: 100% 100%;
 }
+
 .menu-background {
     -fx-background-image: url("start_menu.jpeg");
     -fx-background-size: 100% 100%;
     -fx-background-position: center center;
 }
 
-/* --- RETRO TITLE STYLES --- */
 .retro-title {
     -fx-font-family: "Let's go Digital";
     -fx-font-size: 100px;
@@ -17,6 +16,7 @@
     -fx-stroke-width: 4px;
     -fx-effect: dropshadow(three-pass-box, rgba(255,255,255,0.7), 10, 0.5, 0, 0);
 }
+
 .title-T1 { -fx-text-fill: linear-gradient(to bottom, #ff0000, #990000); }
 .title-E  { -fx-text-fill: linear-gradient(to bottom, #ff7f00, #cc6600); }
 .title-T2 { -fx-text-fill: linear-gradient(to bottom, #ffff00, #cccc00); }
@@ -24,16 +24,22 @@
 .title-I  { -fx-text-fill: linear-gradient(to bottom, #00ffff, #00cccc); }
 .title-S  { -fx-text-fill: linear-gradient(to bottom, #0000ff, #000099); }
 
+.game-over-box {
+    -fx-background-color: rgba(0, 0, 0, 0.9);
+    -fx-border-color: #00FFFF;
+    -fx-border-width: 3px;
+    -fx-padding: 30px;
+    -fx-effect: dropshadow(one-pass-box, black, 0, 0, 10, 10);
+}
 
-/* --- ARCADE MENU BUTTONS --- */
 .arcade-button {
     -fx-font-family: "Let's go Digital";
     -fx-font-size: 36px;
     -fx-font-weight: bold;
-    -fx-text-fill: #FFFF00; /* Yellow Text */
+    -fx-text-fill: #FFFF00;
     -fx-background-color: linear-gradient(to bottom, #4D79FF, #335CC5);
     -fx-background-radius: 0px;
-    -fx-border-color: #00008B; /* Dark Blue */
+    -fx-border-color: #00008B;
     -fx-border-width: 5px;
     -fx-border-radius: 0px;
     -fx-min-width: 260px;
@@ -47,36 +53,37 @@
     -fx-border-color: #FFFF00;
 }
 
-/* --- HIGH SCORE BOX --- */
 .highscore-box {
     -fx-background-color: rgba(0, 0, 0, 0.85);
-    -fx-border-color: #00008B; /* Dark Blue */
+    -fx-border-color: #00008B;
     -fx-border-width: 5px;
     -fx-background-radius: 0px;
     -fx-border-radius: 0px;
-    -fx-padding: 15;
+    -fx-padding: 15px;
     -fx-effect: dropshadow(one-pass-box, black, 0, 0, 6, 6);
 }
+
 .highscore-title {
     -fx-font-family: "Let's go Digital";
     -fx-font-size: 32px;
     -fx-text-fill: #66CCFF;
     -fx-alignment: center;
-    -fx-padding: 0 0 10 0;
+    -fx-padding: 0 0 10px 0;
     -fx-border-color: transparent;
 }
+
 .highscore-rank {
     -fx-font-family: "Let's go Digital";
     -fx-font-size: 24px;
     -fx-text-fill: #FFFF00;
 }
+
 .highscore-entry {
     -fx-font-family: "Let's go Digital";
     -fx-font-size: 24px;
     -fx-text-fill: white;
 }
 
-/* --- COG BUTTON --- */
 .cog-button {
     -fx-font-size: 50px;
     -fx-text-fill: #00008B;
@@ -85,21 +92,50 @@
     -fx-border-width: 4px;
     -fx-background-radius: 0px;
     -fx-border-radius: 0px;
-    -fx-padding: 0 10 0 10;
+    -fx-padding: 0 10px 0 10px;
     -fx-cursor: hand;
 }
+
 .cog-button:hover {
     -fx-background-color: #FFD700;
 }
 
-/* Settings Panel */
-.settings-box { -fx-background-color: rgba(0, 0, 0, 0.9); -fx-border-color: #00FFFF; -fx-border-width: 2px; -fx-padding: 30; }
-.level-button { -fx-font-family: "Let's go Digital"; -fx-font-size: 24px; -fx-text-fill: #00FFFF; -fx-background-color: transparent; -fx-border-color: #00FFFF; -fx-border-width: 2px; -fx-min-width: 50px; -fx-min-height: 50px; -fx-cursor: hand; }
-.level-button:hover { -fx-background-color: rgba(0, 255, 255, 0.2); }
-.level-button-selected { -fx-background-color: #00FFFF; -fx-text-fill: black; }
+.settings-box {
+    -fx-background-color: rgba(0, 0, 0, 0.9);
+    -fx-border-color: #00FFFF;
+    -fx-border-width: 2px;
+    -fx-padding: 30px;
+}
 
-/* IN-GAME STYLES */
-.gameBoard { -fx-border-color: #6699CC; -fx-border-width: 8px; -fx-border-style: dashed; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-effect: dropshadow(one-pass-box, black, 0, 0, 4, 4); }
+.level-button {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 24px;
+    -fx-text-fill: #00FFFF;
+    -fx-background-color: transparent;
+    -fx-border-color: #00FFFF;
+    -fx-border-width: 2px;
+    -fx-min-width: 50px;
+    -fx-min-height: 50px;
+    -fx-cursor: hand;
+}
+
+.level-button:hover {
+    -fx-background-color: rgba(0, 255, 255, 0.2);
+}
+
+.level-button-selected {
+    -fx-background-color: #00FFFF;
+    -fx-text-fill: black;
+}
+
+.gameBoard {
+    -fx-border-color: #6699CC;
+    -fx-border-width: 8px;
+    -fx-border-style: dashed;
+    -fx-border-radius: 0px;
+    -fx-background-radius: 0px;
+    -fx-effect: dropshadow(one-pass-box, black, 0, 0, 4, 4);
+}
 
 .hud-header {
     -fx-font-family: "Let's go Digital";
@@ -117,31 +153,92 @@
     -fx-effect: dropshadow(one-pass-box, black, 0, 0, 3, 3);
 }
 
-/* [MODIFIED] Tighter box dimensions and padding */
 .next-piece-box {
     -fx-border-color: #FFDEAD;
     -fx-border-width: 3px;
     -fx-border-style: dashed;
     -fx-border-radius: 0px;
     -fx-background-color: transparent;
-
-    -fx-padding: 5;        /* Reduced from 10 */
-    -fx-min-width: 100px;  /* Reduced from 110px */
-    -fx-min-height: 80px;  /* Reduced from 110px so height shrinks */
-
+    -fx-padding: 10px;
     -fx-alignment: center;
+    -fx-min-width: 110px;
+    -fx-min-height: 110px;
     -fx-effect: dropshadow(one-pass-box, black, 0, 0, 4, 4);
 }
 
-.pause-menu { -fx-background-color: rgba(0, 0, 0, 0.9); -fx-border-color: #00FFFF; -fx-border-width: 2px; -fx-padding: 20; }
-.play-button { -fx-font-family: "Let's go Digital"; -fx-font-size: 40px; -fx-text-fill: #00FFFF; -fx-background-color: rgba(0,0,0,0.5); -fx-border-color: #00FFFF; -fx-border-width: 4px; }
-.play-button:hover { -fx-background-color: rgba(0, 255, 255, 0.2); }
-.menu-button { -fx-font-family: "Let's go Digital"; -fx-font-size: 40px; -fx-text-fill: #FFFF00; -fx-background-color: rgba(0,0,0,0.5); -fx-border-color: #FFFF00; -fx-border-width: 4px; }
-.menu-button:hover { -fx-background-color: rgba(255, 255, 0, 0.2); }
-.quit-button { -fx-font-family: "Let's go Digital"; -fx-font-size: 40px; -fx-text-fill: #FF00FF; -fx-background-color: rgba(0,0,0,0.5); -fx-border-color: #FF00FF; -fx-border-width: 4px; }
-.quit-button:hover { -fx-background-color: rgba(255, 0, 255, 0.2); }
-.countdown-label { -fx-font-family: "Let's go Digital"; -fx-font-size: 150px; -fx-text-fill: #00FFFF; -fx-effect: dropshadow(one-pass-box, black, 0, 0, 5, 5); }
-.scoreClass { -fx-font-family: "Let's go Digital"; -fx-font-size: 38; -fx-fill: yellow; -fx-text-fill: yellow; }
-.neon-separator { -fx-background-color: #FF0000; -fx-pref-height: 3px; -fx-padding: 0; }
-.gameOverStyle { -fx-font-family: "Let's go Digital"; -fx-font-size: 48; -fx-background-color: red; }
-.bonusStyle { -fx-font-size: 40px; -fx-font-weight: bold; }
+.pause-menu {
+    -fx-background-color: rgba(0, 0, 0, 0.9);
+    -fx-border-color: #00FFFF;
+    -fx-border-width: 2px;
+    -fx-padding: 20px;
+}
+
+.play-button {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 40px;
+    -fx-text-fill: #00FFFF;
+    -fx-background-color: rgba(0,0,0,0.5);
+    -fx-border-color: #00FFFF;
+    -fx-border-width: 4px;
+}
+
+.play-button:hover {
+    -fx-background-color: rgba(0, 255, 255, 0.2);
+}
+
+.menu-button {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 40px;
+    -fx-text-fill: #FFFF00;
+    -fx-background-color: rgba(0,0,0,0.5);
+    -fx-border-color: #FFFF00;
+    -fx-border-width: 4px;
+}
+
+.menu-button:hover {
+    -fx-background-color: rgba(255, 255, 0, 0.2);
+}
+
+.quit-button {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 40px;
+    -fx-text-fill: #FF00FF;
+    -fx-background-color: rgba(0,0,0,0.5);
+    -fx-border-color: #FF00FF;
+    -fx-border-width: 4px;
+}
+
+.quit-button:hover {
+    -fx-background-color: rgba(255, 0, 255, 0.2);
+}
+
+.countdown-label {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 150px;
+    -fx-text-fill: #00FFFF;
+    -fx-effect: dropshadow(one-pass-box, black, 0, 0, 5, 5);
+}
+
+.scoreClass {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 38px;
+    -fx-fill: yellow;
+    -fx-text-fill: yellow;
+}
+
+.neon-separator {
+    -fx-background-color: #FF0000;
+    -fx-pref-height: 3px;
+    -fx-padding: 0;
+}
+
+.gameOverStyle {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 48px;
+    -fx-background-color: red;
+}
+
+.bonusStyle {
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+}

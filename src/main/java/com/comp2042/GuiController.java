@@ -43,6 +43,8 @@ public class GuiController implements Initializable {
     @FXML private GridPane brickPanel;
     @FXML private GridPane ghostPanel;
     @FXML private Pane gameZone;
+
+    // Injected Game Over Panel
     @FXML private GameOverPanel gameOverPanel;
 
     @FXML private Label scoreLabel;
@@ -68,6 +70,7 @@ public class GuiController implements Initializable {
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+    private IntegerProperty currentScoreProperty;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -133,7 +136,6 @@ public class GuiController implements Initializable {
         });
     }
 
-    // [NEW] Triggered by the Cog Button
     @FXML
     public void onPauseClicked(ActionEvent event) {
         if (!isGameOver.get() && !isPause.get()) {
@@ -170,7 +172,16 @@ public class GuiController implements Initializable {
             URL location = getClass().getClassLoader().getResource("startMenu.fxml");
             FXMLLoader fxmlLoader = new FXMLLoader(location);
             Parent root = fxmlLoader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            // [FIX] Handle case where event is null (called from GameOverPanel)
+            Stage stage;
+            if (event != null && event.getSource() instanceof Node) {
+                stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            } else {
+                // Fallback: use the gamePanel to find the scene
+                stage = (Stage) gamePanel.getScene().getWindow();
+            }
+
             Scene scene = new Scene(root, 600, 700);
             stage.setScene(scene);
             stage.show();
@@ -442,6 +453,7 @@ public class GuiController implements Initializable {
 
     public void bindScore(IntegerProperty score) {
         scoreLabel.textProperty().bind(score.asString("%d"));
+        this.currentScoreProperty = score;
     }
 
     public void bindExtraStats(Score scoreObj) {
@@ -452,7 +464,8 @@ public class GuiController implements Initializable {
     public void gameOver() {
         timeLine.stop();
         clock.stop();
-        gameOverPanel.setVisible(true);
+        // Show Game Over Panel
+        gameOverPanel.show(currentScoreProperty.get(), this);
         isGameOver.set(true);
     }
 

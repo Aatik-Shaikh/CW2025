@@ -21,7 +21,6 @@
                     <Label text="SCORE:" styleClass="hud-header"/>
                     <Label fx:id="scoreLabel" text="0" styleClass="hud-value"/>
                 </VBox>
-
                 <VBox alignment="CENTER" spacing="-5">
                     <Label text="LINES:" styleClass="hud-header"/>
                     <Label fx:id="linesLabel" text="0" styleClass="hud-value"/>
@@ -39,41 +38,27 @@
             </BorderPane>
 
             <VBox layoutX="430" layoutY="50" spacing="10" alignment="TOP_CENTER" prefWidth="160">
-
                 <VBox alignment="CENTER" spacing="-5">
                     <Label text="TIME:" styleClass="hud-header"/>
                     <Label fx:id="timeLabel" text="00:00" styleClass="hud-value"/>
                 </VBox>
-
                 <VBox alignment="CENTER" spacing="-5">
                     <Label text="LEVEL:" styleClass="hud-header"/>
                     <Label fx:id="levelLabel" text="1" styleClass="hud-value"/>
                 </VBox>
-
                 <VBox styleClass="next-piece-box" spacing="5">
                     <VBox alignment="CENTER" spacing="-8">
-                        <Label text="NEXT" styleClass="hud-header" style="-fx-font-size: 20px;"/>
-                        <Label text="PIECE" styleClass="hud-header" style="-fx-font-size: 20px;"/>
+                        <Label text="NEXT" styleClass="hud-header" style="-fx-font-size: 18px;"/>
+                        <Label text="PIECE" styleClass="hud-header" style="-fx-font-size: 18px;"/>
                     </VBox>
                     <VBox fx:id="nextPiecePanel" alignment="CENTER" style="-fx-padding: 0;"/>
                 </VBox>
-
             </VBox>
 
-            <Group fx:id="groupNotification" layoutX="200" layoutY="300">
-                <VBox alignment="CENTER">
-                    <GameOverPanel fx:id="gameOverPanel"/>
-                </VBox>
-            </Group>
         </Pane>
     </Group>
 
-    <Button text="⚙" onAction="#onPauseClicked" styleClass="cog-button"
-            StackPane.alignment="BOTTOM_LEFT">
-        <StackPane.margin>
-            <Insets bottom="20" left="20"/>
-        </StackPane.margin>
-    </Button>
+    <GameOverPanel fx:id="gameOverPanel" visible="false"/>
 
     <VBox fx:id="pauseMenu" alignment="CENTER" spacing="20" visible="false" maxWidth="350" maxHeight="400" styleClass="pause-menu">
         <Label text="PAUSED" styleClass="scoreClass" style="-fx-font-size: 60px; -fx-text-fill: white;"/>
@@ -83,6 +68,13 @@
     </VBox>
 
     <Label fx:id="countdownLabel" text="" visible="false" styleClass="countdown-label"/>
+
+    <Button text="⚙" onAction="#onPauseClicked" styleClass="cog-button"
+            StackPane.alignment="BOTTOM_LEFT">
+        <StackPane.margin>
+            <Insets bottom="20" left="20"/>
+        </StackPane.margin>
+    </Button>
 
     <stylesheets>
         <URL value="@window_style.css"/>
