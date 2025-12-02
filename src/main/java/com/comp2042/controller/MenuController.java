@@ -1,4 +1,4 @@
-package controller;
+package com.comp2042.controller;
 
 import com.comp2042.GameConfig;
 import com.comp2042.HighScoreManager;

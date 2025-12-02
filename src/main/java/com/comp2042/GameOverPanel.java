@@ -1,6 +1,6 @@
 package com.comp2042;
 
-import controller.GuiController;
+import com.comp2042.controller.GuiController;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
