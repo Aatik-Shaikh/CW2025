@@ -1,4 +1,6 @@
-package com.comp2042;
+package com.comp2042.model;
+
+import com.comp2042.MatrixOperations;
 
 import java.util.ArrayList;
 import java.util.List;

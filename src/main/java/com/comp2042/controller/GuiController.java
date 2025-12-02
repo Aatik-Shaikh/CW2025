@@ -1,6 +1,13 @@
-package controller;
+package com.comp2042.controller;
 
 import com.comp2042.*;
+import com.comp2042.events.EventSource;
+import com.comp2042.events.EventType;
+import com.comp2042.events.InputEventListener;
+import com.comp2042.events.MoveEvent;
+import com.comp2042.model.DownData;
+import com.comp2042.model.Score;
+import com.comp2042.model.ViewData;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;

@@ -1,5 +1,6 @@
-package com.comp2042;
+package com.comp2042.model;
 
+import com.comp2042.GameConfig;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 

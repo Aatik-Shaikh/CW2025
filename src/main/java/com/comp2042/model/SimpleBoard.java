@@ -1,8 +1,10 @@
-package com.comp2042;
+package com.comp2042.model;
 
+import com.comp2042.GameConfig;
 import com.comp2042.logic.bricks.Brick;
 import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
+import com.comp2042.MatrixOperations;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,7 +18,6 @@ public class SimpleBoard implements Board {
     private Point p;
     private final Score score;
 
-    // [NEW] Hold mechanic variables
     private Brick currentBrick;
     private Brick holdBrick;
     private boolean canHold = true;
@@ -95,38 +96,30 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
-        // [MODIFIED] Store current brick so we can hold it later
         currentBrick = gen.getBrick();
         rot.setBrick(currentBrick);
         p = new Point(GameConfig.SPAWN_X, GameConfig.SPAWN_Y);
 
-        // [NEW] Reset hold permission for the new turn
         canHold = true;
 
         return MatrixOperations.intersect(matrix, rot.getCurrentShape(), p.x, p.y);
     }
 
-    // [NEW] Hold Functionality
     @Override
     public void holdBrick() {
         if (!canHold) return;
 
         if (holdBrick == null) {
-            // First time holding: Store current, spawn new
             holdBrick = currentBrick;
-            createNewBrick(); // This resets position and gets next brick
+            createNewBrick();
         } else {
-            // Swap logic
             Brick temp = holdBrick;
             holdBrick = currentBrick;
             currentBrick = temp;
 
-            // Set the swapped brick as active
             rot.setBrick(currentBrick);
             p = new Point(GameConfig.SPAWN_X, GameConfig.SPAWN_Y);
         }
-
-        // Disable holding until next lock
         canHold = false;
     }
 
@@ -161,7 +154,6 @@ public class SimpleBoard implements Board {
             ghostY++;
         }
 
-        // [MODIFIED] Pass hold brick data (or null)
         int[][] holdData = (holdBrick != null) ? holdBrick.getShapeMatrix().get(0) : null;
 
         return new ViewData(rot.getCurrentShape(), p.x, p.y, ghostY, shapes, holdData);
@@ -176,7 +168,7 @@ public class SimpleBoard implements Board {
     public void newGame() {
         matrix = new int[GameConfig.ROWS][GameConfig.COLS];
         score.reset();
-        holdBrick = null; // Reset held brick
+        holdBrick = null;
         createNewBrick();
     }
 }
