@@ -23,8 +23,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Parent root = fxmlLoader.load();
 
-        primaryStage.setTitle("TetrisJFX");
-        Scene scene = new Scene(root, 600, 700);
+        primaryStage.setTitle("Tetris - Retro Edition");        Scene scene = new Scene(root, 600, 700);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
