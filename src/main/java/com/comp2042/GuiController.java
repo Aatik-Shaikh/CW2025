@@ -44,7 +44,6 @@ public class GuiController implements Initializable {
     @FXML private GridPane ghostPanel;
     @FXML private Pane gameZone;
 
-    // Injected Game Over Panel
     @FXML private GameOverPanel gameOverPanel;
 
     @FXML private Label scoreLabel;
@@ -55,6 +54,9 @@ public class GuiController implements Initializable {
     @FXML private Label countdownLabel;
     @FXML private VBox pauseMenu;
     @FXML private VBox nextPiecePanel;
+
+    // [NEW] Hold Piece UI Panel
+    @FXML private VBox holdPiecePanel;
 
     private Rectangle[][] displayMatrix;
     private Rectangle[][] rectangles;
@@ -67,6 +69,8 @@ public class GuiController implements Initializable {
 
     private Timeline clock;
     private int secondsPlayed = 0;
+
+    private boolean isCountdownRunning = false;
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
@@ -113,6 +117,8 @@ public class GuiController implements Initializable {
 
     private void setupKeyControls() {
         gamePanel.setOnKeyPressed(event -> {
+            if (isCountdownRunning) return;
+
             if (event.getCode() == KeyCode.P || event.getCode() == KeyCode.ESCAPE) {
                 togglePause();
                 return;
@@ -129,8 +135,12 @@ public class GuiController implements Initializable {
                 if (event.getCode() == KeyCode.DOWN || event.getCode() == KeyCode.S)
                     moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
 
-                if (event.getCode() == KeyCode.C)
+                if (event.getCode() == KeyCode.SPACE)
                     moveDown(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
+
+                // [NEW] Hold Piece Binding
+                if (event.getCode() == KeyCode.C)
+                    refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER)));
             }
             if (event.getCode() == KeyCode.N) newGame(null);
         });
@@ -138,6 +148,8 @@ public class GuiController implements Initializable {
 
     @FXML
     public void onPauseClicked(ActionEvent event) {
+        if (isCountdownRunning) return;
+
         if (!isGameOver.get() && !isPause.get()) {
             togglePause();
         }
@@ -173,12 +185,10 @@ public class GuiController implements Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(location);
             Parent root = fxmlLoader.load();
 
-            // [FIX] Handle case where event is null (called from GameOverPanel)
             Stage stage;
             if (event != null && event.getSource() instanceof Node) {
                 stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             } else {
-                // Fallback: use the gamePanel to find the scene
                 stage = (Stage) gamePanel.getScene().getWindow();
             }
 
@@ -244,6 +254,9 @@ public class GuiController implements Initializable {
         updateBrickPanelPosition(brick);
         renderNextPiece(brick.getNextBrickData());
 
+        // [NEW] Render initial hold state (likely empty)
+        renderHoldPiece(brick.getHoldBrickData());
+
         double boardWidth = COLS * BRICK_SIZE + (COLS - 1) * BOARD_GAP;
         double boardHeight = (ROWS - VISIBLE_ROW_OFFSET) * BRICK_SIZE + (ROWS - VISIBLE_ROW_OFFSET - 1) * BOARD_GAP;
         gameZone.setPrefSize(boardWidth, boardHeight);
@@ -259,7 +272,35 @@ public class GuiController implements Initializable {
         timeLine.setCycleCount(Timeline.INDEFINITE);
     }
 
+    // [NEW] Render Hold Piece
+    private void renderHoldPiece(int[][] holdData) {
+        holdPiecePanel.getChildren().clear();
+        if (holdData == null) return;
+
+        GridPane pieceGrid = new GridPane();
+        pieceGrid.setAlignment(Pos.CENTER);
+        pieceGrid.setHgap(BOARD_GAP);
+        pieceGrid.setVgap(BOARD_GAP);
+
+        for (int r = 0; r < holdData.length; r++) {
+            for (int c = 0; c < holdData[r].length; c++) {
+                Rectangle rect = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                if (holdData[r][c] != 0) {
+                    rect.setFill(getFillColor(holdData[r][c]));
+                    rect.setStroke(Color.BLACK);
+                    rect.setStrokeWidth(1);
+                    rect.setStrokeType(StrokeType.INSIDE);
+                } else {
+                    rect.setFill(Color.TRANSPARENT);
+                }
+                pieceGrid.add(rect, c, r);
+            }
+        }
+        holdPiecePanel.getChildren().add(pieceGrid);
+    }
+
     public void startCountdown(Runnable onFinished) {
+        isCountdownRunning = true;
         countdownLabel.setVisible(true);
         countdownLabel.setText("3");
 
@@ -284,6 +325,7 @@ public class GuiController implements Initializable {
         PauseTransition pauseGo = new PauseTransition(Duration.seconds(0.5));
         pauseGo.setOnFinished(e -> {
             countdownLabel.setVisible(false);
+            isCountdownRunning = false;
             onFinished.run();
         });
 
@@ -388,6 +430,8 @@ public class GuiController implements Initializable {
                 }
             }
             renderNextPiece(brick.getNextBrickData());
+            // [NEW] Update Hold Piece view
+            renderHoldPiece(brick.getHoldBrickData());
         }
     }
 
@@ -464,7 +508,6 @@ public class GuiController implements Initializable {
     public void gameOver() {
         timeLine.stop();
         clock.stop();
-        // Show Game Over Panel
         gameOverPanel.show(currentScoreProperty.get(), this);
         isGameOver.set(true);
     }

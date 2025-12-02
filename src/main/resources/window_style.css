@@ -159,7 +159,7 @@
     -fx-border-style: dashed;
     -fx-border-radius: 0px;
     -fx-background-color: transparent;
-    -fx-padding: 10px;
+    -fx-padding: 0px; /* CHANGED from 10px to 0px */
     -fx-alignment: center;
     -fx-min-width: 110px;
     -fx-min-height: 110px;

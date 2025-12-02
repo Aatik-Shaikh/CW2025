@@ -20,15 +20,12 @@ public class GameController implements InputEventListener {
         viewGuiController.bindExtraStats(board.getScore());
 
         setupSpeedAdjustment();
-
-        // [FIX] Force speed update on start
         updateSpeed(board.getScore().levelProperty().get());
     }
 
     public void startGame() {
         viewGuiController.startCountdown(() -> {
             viewGuiController.getTimeline().play();
-            // Start clock
             viewGuiController.startClock();
         });
     }
@@ -41,8 +38,14 @@ public class GameController implements InputEventListener {
 
     private void updateSpeed(int level) {
         double multiplier = 1.0 + (level - 1) * GameConfig.LEVEL_SPEED_MULTIPLIER;
-        System.out.println("Applying Speed Multiplier: " + multiplier);
         viewGuiController.getTimeline().setRate(multiplier);
+    }
+
+    // [NEW] Handle Hold Event
+    @Override
+    public ViewData onHoldEvent(MoveEvent event) {
+        board.holdBrick();
+        return board.getViewData();
     }
 
     @Override

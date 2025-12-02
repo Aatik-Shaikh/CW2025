@@ -16,18 +16,27 @@
     <Group>
         <Pane prefWidth="600" prefHeight="700">
 
-            <VBox layoutX="10" layoutY="150" spacing="30" alignment="TOP_CENTER" prefWidth="160">
+            <VBox layoutX="10" layoutY="210" spacing="30" alignment="TOP_CENTER" prefWidth="160">
                 <VBox alignment="CENTER" spacing="-5">
                     <Label text="SCORE:" styleClass="hud-header"/>
                     <Label fx:id="scoreLabel" text="0" styleClass="hud-value"/>
                 </VBox>
+
                 <VBox alignment="CENTER" spacing="-5">
                     <Label text="LINES:" styleClass="hud-header"/>
                     <Label fx:id="linesLabel" text="0" styleClass="hud-value"/>
                 </VBox>
+
+                <VBox styleClass="next-piece-box" spacing="5">
+                    <VBox alignment="CENTER" spacing="-8">
+                        <Label text="HOLD" styleClass="hud-header" style="-fx-font-size: 18px;"/>
+                        <Label text="PIECE" styleClass="hud-header" style="-fx-font-size: 18px;"/>
+                    </VBox>
+                    <VBox fx:id="holdPiecePanel" alignment="CENTER" style="-fx-padding: 0;"/>
+                </VBox>
             </VBox>
 
-            <BorderPane styleClass="gameBoard" fx:id="gameBoard" layoutX="165" layoutY="50">
+            <BorderPane styleClass="gameBoard" fx:id="gameBoard" layoutX="165" layoutY="110">
                 <center>
                     <Pane fx:id="gameZone">
                         <GridPane fx:id="gamePanel"/>
@@ -37,15 +46,18 @@
                 </center>
             </BorderPane>
 
-            <VBox layoutX="430" layoutY="50" spacing="10" alignment="TOP_CENTER" prefWidth="160">
+            <VBox layoutX="430" layoutY="110" spacing="10" alignment="TOP_CENTER" prefWidth="160">
+
                 <VBox alignment="CENTER" spacing="-5">
                     <Label text="TIME:" styleClass="hud-header"/>
                     <Label fx:id="timeLabel" text="00:00" styleClass="hud-value"/>
                 </VBox>
+
                 <VBox alignment="CENTER" spacing="-5">
                     <Label text="LEVEL:" styleClass="hud-header"/>
                     <Label fx:id="levelLabel" text="1" styleClass="hud-value"/>
                 </VBox>
+
                 <VBox styleClass="next-piece-box" spacing="5">
                     <VBox alignment="CENTER" spacing="-8">
                         <Label text="NEXT" styleClass="hud-header" style="-fx-font-size: 18px;"/>
@@ -53,6 +65,7 @@
                     </VBox>
                     <VBox fx:id="nextPiecePanel" alignment="CENTER" style="-fx-padding: 0;"/>
                 </VBox>
+
             </VBox>
 
         </Pane>

@@ -14,6 +14,8 @@ public interface Board {
 
     int dropBrickToBottom();
 
+    void holdBrick();
+
     int[][] getBoardMatrix();
 
     ViewData getViewData();
