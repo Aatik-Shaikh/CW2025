@@ -35,8 +35,7 @@ public class Main extends Application {
             URL fontUrl = getClass().getResource("/digital.ttf");
             if (fontUrl != null) {
                 Font.loadFont(fontUrl.toExternalForm(), 20);
-                System.out.println("SUCCESS: Loaded digital.ttf");
-            } else {
+                System.out.println(" >> SUCCESS: Font 'digital.ttf' is active.");            } else {
                 System.err.println("CRITICAL: digital.ttf not found in resources.");
             }
         } catch (Exception e) {
