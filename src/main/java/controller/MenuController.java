@@ -1,5 +1,7 @@
-package com.comp2042;
+package controller;
 
+import com.comp2042.GameConfig;
+import com.comp2042.HighScoreManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;

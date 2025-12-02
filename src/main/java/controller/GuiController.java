@@ -1,5 +1,6 @@
-package com.comp2042;
+package controller;
 
+import com.comp2042.*;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
