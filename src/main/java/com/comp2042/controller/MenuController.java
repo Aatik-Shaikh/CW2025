@@ -30,13 +30,14 @@ public class MenuController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        if (getClass().getClassLoader().getResource("digital.ttf") != null) {
+            Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
+        }
         if (getClass().getClassLoader().getResource("PressStart2P-Regular.ttf") != null) {
             Font.loadFont(getClass().getClassLoader().getResource("PressStart2P-Regular.ttf").toExternalForm(), 38);
         }
 
         List<Integer> topScores = HighScoreManager.getTopScores();
-
-        // [FIX] Removed "1. ", "2. ", "3. " prefixes
         hs1.setText(topScores.size() > 0 ? topScores.get(0).toString() : "---");
         hs2.setText(topScores.size() > 1 ? topScores.get(1).toString() : "---");
         hs3.setText(topScores.size() > 2 ? topScores.get(2).toString() : "---");

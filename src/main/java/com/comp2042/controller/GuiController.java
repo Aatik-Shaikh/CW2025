@@ -1,13 +1,16 @@
 package com.comp2042.controller;
 
-import com.comp2042.*;
-import com.comp2042.events.EventSource;
-import com.comp2042.events.EventType;
+import com.comp2042.GameOverPanel;
+import com.comp2042.model.ViewData;
+import com.comp2042.model.Score;
+import com.comp2042.model.DownData;
+import com.comp2042.model.ClearRow;
 import com.comp2042.events.InputEventListener;
 import com.comp2042.events.MoveEvent;
-import com.comp2042.model.DownData;
-import com.comp2042.model.Score;
-import com.comp2042.model.ViewData;
+import com.comp2042.events.EventType;
+import com.comp2042.events.EventSource;
+import com.comp2042.NotificationPanel;
+
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
@@ -63,7 +66,7 @@ public class GuiController implements Initializable {
     @FXML private VBox pauseMenu;
     @FXML private VBox nextPiecePanel;
 
-    // [NEW] Hold Piece UI Panel
+    // Hold Piece UI Panel
     @FXML private VBox holdPiecePanel;
 
     private Rectangle[][] displayMatrix;
@@ -86,8 +89,12 @@ public class GuiController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Load fonts (Fallback if Main doesn't load it)
         if (getClass().getClassLoader().getResource("digital.ttf") != null) {
             Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
+        }
+        if (getClass().getClassLoader().getResource("PressStart2P-Regular.ttf") != null) {
+            Font.loadFont(getClass().getClassLoader().getResource("PressStart2P-Regular.ttf").toExternalForm(), 38);
         }
 
         gamePanel.setHgap(BOARD_GAP);
@@ -146,7 +153,6 @@ public class GuiController implements Initializable {
                 if (event.getCode() == KeyCode.SPACE)
                     moveDown(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
 
-                // [NEW] Hold Piece Binding
                 if (event.getCode() == KeyCode.C)
                     refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER)));
             }
@@ -193,10 +199,12 @@ public class GuiController implements Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(location);
             Parent root = fxmlLoader.load();
 
+            // Handle case where event is null (called from GameOverPanel)
             Stage stage;
             if (event != null && event.getSource() instanceof Node) {
                 stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             } else {
+                // Fallback: use the gamePanel to find the scene
                 stage = (Stage) gamePanel.getScene().getWindow();
             }
 
@@ -261,8 +269,6 @@ public class GuiController implements Initializable {
 
         updateBrickPanelPosition(brick);
         renderNextPiece(brick.getNextBrickData());
-
-        // [NEW] Render initial hold state (likely empty)
         renderHoldPiece(brick.getHoldBrickData());
 
         double boardWidth = COLS * BRICK_SIZE + (COLS - 1) * BOARD_GAP;
@@ -280,7 +286,6 @@ public class GuiController implements Initializable {
         timeLine.setCycleCount(Timeline.INDEFINITE);
     }
 
-    // [NEW] Render Hold Piece
     private void renderHoldPiece(int[][] holdData) {
         holdPiecePanel.getChildren().clear();
         if (holdData == null) return;
@@ -372,7 +377,9 @@ public class GuiController implements Initializable {
                     int colorId = brickData[row][col];
                     if (colorId != 0) {
                         Rectangle r = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+
                         Paint baseColor = getFillColor(colorId);
+
                         r.setFill(baseColor);
                         r.setOpacity(0.4);
                         r.setArcHeight(0);
@@ -438,7 +445,6 @@ public class GuiController implements Initializable {
                 }
             }
             renderNextPiece(brick.getNextBrickData());
-            // [NEW] Update Hold Piece view
             renderHoldPiece(brick.getHoldBrickData());
         }
     }
@@ -516,6 +522,7 @@ public class GuiController implements Initializable {
     public void gameOver() {
         timeLine.stop();
         clock.stop();
+        // Call the new show method
         gameOverPanel.show(currentScoreProperty.get(), this);
         isGameOver.set(true);
     }

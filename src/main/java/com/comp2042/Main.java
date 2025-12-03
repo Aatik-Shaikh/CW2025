@@ -1,10 +1,10 @@
 package com.comp2042;
 
+import com.comp2042.util.ResourceLoader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import java.net.URL;
 
@@ -12,7 +12,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        loadFonts();
+        ResourceLoader.loadResources();
 
         URL location = getClass().getClassLoader().getResource("startMenu.fxml");
         if (location == null) {
@@ -23,25 +23,10 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Parent root = fxmlLoader.load();
 
-        primaryStage.setTitle("Tetris - Retro Edition");        Scene scene = new Scene(root, 600, 700);
+        primaryStage.setTitle("TetrisJFX");
+        Scene scene = new Scene(root, 600, 700);
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    private void loadFonts() {
-        try {
-            // [RESTORED] Load digital.ttf
-            URL fontUrl = getClass().getResource("/digital.ttf");
-            if (fontUrl != null) {
-                Font.loadFont(fontUrl.toExternalForm(), 20);
-                // [FIX] Pick ONE of the print statements and delete the <<<< HEAD markers
-                System.out.println(" [System] Digital font loaded successfully.");
-            } else {
-                System.err.println("CRITICAL: digital.ttf not found in resources.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public static void main(String[] args) {
