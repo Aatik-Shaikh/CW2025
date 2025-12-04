@@ -5,7 +5,7 @@ import com.comp2042.MatrixOperations;
 import java.util.ArrayList;
 import java.util.List;
 
-final class OBrick implements Brick {
+public final class OBrick implements Brick {
 
     private final List<int[][]> brickMatrix = new ArrayList<>();
 

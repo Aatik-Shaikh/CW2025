@@ -23,10 +23,15 @@ public class SimpleBoard implements Board {
     private boolean canHold = true;
 
     public SimpleBoard(int width, int height) {
+        this(width, height, new RandomBrickGenerator());
+    }
+
+    // Constructor for Testing
+    public SimpleBoard(int width, int height, BrickGenerator generator) {
         matrix = new int[GameConfig.ROWS][GameConfig.COLS];
-        gen = new RandomBrickGenerator();
-        rot = new BrickRotator();
-        score = new Score();
+        this.gen = generator;
+        this.rot = new BrickRotator();
+        this.score = new Score();
     }
 
     private boolean checkCollision(int[][] m, int[][] shape, int x, int y) {
