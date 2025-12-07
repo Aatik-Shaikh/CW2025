@@ -14,15 +14,11 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     public RandomBrickGenerator() {
         brickList = new ArrayList<>();
-        brickList.add(new IBrick());
-        brickList.add(new JBrick());
-        brickList.add(new LBrick());
-        brickList.add(new OBrick());
-        brickList.add(new SBrick());
-        brickList.add(new TBrick());
-        brickList.add(new ZBrick());
 
-        // Initial fill: ensure we have at least 5 bricks to start
+        for (int i = 1; i <= 7; i++) {
+            brickList.add(BrickFactory.createBrick(i));
+        }
+
         while (nextBricks.size() < 5) {
             nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         }
@@ -30,7 +26,6 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     @Override
     public Brick getBrick() {
-        // If queue gets low, refill it to maintain the preview buffer
         if (nextBricks.size() <= 4) {
             nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         }
@@ -44,11 +39,9 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     @Override
     public List<Brick> getNextBricks(int count) {
-        // Safety: ensure we have enough bricks for the requested count
         while (nextBricks.size() < count) {
             nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         }
-        // Return the next 'count' bricks without removing them from the queue
         return nextBricks.stream().limit(count).collect(Collectors.toList());
     }
 }
