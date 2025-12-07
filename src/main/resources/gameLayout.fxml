@@ -75,14 +75,14 @@
 
     <VBox fx:id="pauseMenu" alignment="CENTER" spacing="20" visible="false" maxWidth="350" maxHeight="400" styleClass="pause-menu">
         <Label text="PAUSED" styleClass="scoreClass" style="-fx-font-size: 60px; -fx-text-fill: white;"/>
-        <Button text="RESUME" onAction="#resumeGame" styleClass="play-button" style="-fx-font-size: 30px; -fx-min-width: 200px; -fx-min-height: 60px;"/>
-        <Button text="MAIN MENU" onAction="#returnToMenu" styleClass="menu-button" style="-fx-font-size: 30px; -fx-min-width: 200px; -fx-min-height: 60px;"/>
-        <Button text="QUIT" onAction="#exitGame" styleClass="quit-button" style="-fx-font-size: 30px; -fx-min-width: 200px; -fx-min-height: 60px;"/>
+        <Button text="RESUME" onAction="#resumeGame" focusTraversable="false" styleClass="play-button" style="-fx-font-size: 30px; -fx-min-width: 200px; -fx-min-height: 60px;"/>
+        <Button text="MAIN MENU" onAction="#returnToMenu" focusTraversable="false" styleClass="menu-button" style="-fx-font-size: 30px; -fx-min-width: 200px; -fx-min-height: 60px;"/>
+        <Button text="QUIT" onAction="#exitGame" focusTraversable="false" styleClass="quit-button" style="-fx-font-size: 30px; -fx-min-width: 200px; -fx-min-height: 60px;"/>
     </VBox>
 
     <Label fx:id="countdownLabel" text="" visible="false" styleClass="countdown-label"/>
 
-    <Button text="⚙" onAction="#onPauseClicked" styleClass="cog-button"
+    <Button text="⚙" onAction="#onPauseClicked" focusTraversable="false" styleClass="cog-button"
             StackPane.alignment="BOTTOM_LEFT">
         <StackPane.margin>
             <Insets bottom="20" left="20"/>

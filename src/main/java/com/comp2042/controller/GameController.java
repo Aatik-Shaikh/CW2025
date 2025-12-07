@@ -1,3 +1,20 @@
+
+/*
+ * This class acts as the central logic coordinator for the game.
+ * It implements the InputEventListener interface to react to user actions
+ * passed from the GUI and updates the game model accordingly.
+ *
+ * Key Responsibilities:
+ * 1. Initializing the game board and connecting it to the view.
+ * 2. Managing game speed and difficulty progression based on the score/level.
+ * 3. Processing gameplay events (move down, left, right, rotate) and updating the model.
+ * 4. Handling special mechanics like Hard Drop and Hold Piece.
+ * 5. Detecting Game Over conditions and high score updates.
+ */
+
+
+
+
 package com.comp2042.controller;
 
 import com.comp2042.*;
@@ -8,6 +25,7 @@ import com.comp2042.model.*;
 
 public class GameController implements InputEventListener {
 
+    // The game board model which holds the state of the grid and pieces
     private Board board = new SimpleBoard(GameConfig.ROWS, GameConfig.COLS);
     private final GuiController viewGuiController;
 
@@ -28,7 +46,7 @@ public class GameController implements InputEventListener {
         setupSpeedAdjustment();
         updateSpeed(board.getScore().levelProperty().get());
     }
-
+    // Starts the game loop after the countdown animation finishes
     public void startGame() {
         viewGuiController.startCountdown(() -> {
             viewGuiController.getTimeline().play();
@@ -36,18 +54,21 @@ public class GameController implements InputEventListener {
         });
     }
 
+    // Sets up a listener to monitor level changes and adjust game speed dynamically
     private void setupSpeedAdjustment() {
         board.getScore().levelProperty().addListener((obs, oldVal, newVal) -> {
             updateSpeed(newVal.intValue());
         });
     }
 
+    // Calculates the speed multiplier based on the current level
     private void updateSpeed(int level) {
         double multiplier = 1.0 + (level - 1) * GameConfig.LEVEL_SPEED_MULTIPLIER;
         viewGuiController.getTimeline().setRate(multiplier);
     }
 
-    // [NEW] Handle Hold Event
+
+    //Handles the Hold Piece event triggered by the user
     @Override
     public ViewData onHoldEvent(MoveEvent event) {
         board.holdBrick();
@@ -83,6 +104,7 @@ public class GameController implements InputEventListener {
         return new DownData(clearRow, board.getViewData());
     }
 
+    // Process the Hard Drop event
     @Override
     public DownData onHardDropEvent(MoveEvent event) {
         ViewData currentView = board.getViewData();
@@ -96,6 +118,7 @@ public class GameController implements InputEventListener {
             viewGuiController.showHardDropTrail(startX, startY, linesDropped, shape);
         }
 
+        // Award points for hard dropping (2 points per line)
         board.getScore().add(linesDropped * 2);
 
         board.mergeBrickToBackground();
@@ -115,24 +138,28 @@ public class GameController implements InputEventListener {
         return new DownData(clearRow, board.getViewData());
     }
 
+    // Handles movement to the left
     @Override
     public ViewData onLeftEvent(MoveEvent event) {
         board.moveBrickLeft();
         return board.getViewData();
     }
 
+    // Handles movement to the right
     @Override
     public ViewData onRightEvent(MoveEvent event) {
         board.moveBrickRight();
         return board.getViewData();
     }
 
+    // Handles rotation
     @Override
     public ViewData onRotateEvent(MoveEvent event) {
         board.rotateLeftBrick();
         return board.getViewData();
     }
 
+    // Resets the game state to start a new session
     @Override
     public void createNewGame() {
         board.newGame();

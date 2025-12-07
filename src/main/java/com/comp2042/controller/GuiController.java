@@ -1,15 +1,14 @@
+/*
+ *
+ * This class controls the main gameplay screen and UI updates.
+ * It manages the visual grid, user input events, and the game loop.
+ *
+ */
 package com.comp2042.controller;
 
-import com.comp2042.GameOverPanel;
-import com.comp2042.model.ViewData;
-import com.comp2042.model.Score;
-import com.comp2042.model.DownData;
-import com.comp2042.model.ClearRow;
-import com.comp2042.events.InputEventListener;
-import com.comp2042.events.MoveEvent;
-import com.comp2042.events.EventType;
-import com.comp2042.events.EventSource;
-import com.comp2042.NotificationPanel;
+import com.comp2042.*;
+import com.comp2042.model.*;
+import com.comp2042.events.*;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
@@ -49,47 +48,56 @@ import static com.comp2042.GameConfig.*;
 
 public class GuiController implements Initializable {
 
+    // --- FXML Bindings for UI Components ---
     @FXML private GridPane gamePanel;
     @FXML private Group groupNotification;
     @FXML private GridPane brickPanel;
     @FXML private GridPane ghostPanel;
     @FXML private Pane gameZone;
 
+    // Custom Game Over Overlay Panel
     @FXML private GameOverPanel gameOverPanel;
 
+    // HUD Labels
     @FXML private Label scoreLabel;
     @FXML private Label levelLabel;
     @FXML private Label linesLabel;
     @FXML private Label timeLabel;
 
+    // Overlay UI Elements
     @FXML private Label countdownLabel;
     @FXML private VBox pauseMenu;
     @FXML private VBox nextPiecePanel;
+    @FXML private VBox holdPiecePanel; // Panel for the Hold mechanic
 
-    // Hold Piece UI Panel
-    @FXML private VBox holdPiecePanel;
-
+    // Arrays to store the visual Rectangle objects for the grid
     private Rectangle[][] displayMatrix;
     private Rectangle[][] rectangles;
     private Rectangle[][] ghostRectangles;
 
     private Group trailGroup;
 
+    // Logic & Timing
     private InputEventListener eventListener;
-    private Timeline timeLine;
-
-    private Timeline clock;
+    private Timeline timeLine;  // The main game loop (falling blocks)
+    private Timeline clock;     // The seconds counter for playtime
     private int secondsPlayed = 0;
 
+    // Flags for game state
     private boolean isCountdownRunning = false;
-
     private final BooleanProperty isPause = new SimpleBooleanProperty();
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
     private IntegerProperty currentScoreProperty;
 
+    /**
+     * Initializes the controller class. This method is automatically called
+     * after the FXML file has been loaded.
+     * * It sets up the grid layout, loads fonts (as a fallback), and initializes
+     * the input handling and game clock.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Load fonts (Fallback if Main doesn't load it)
+        // Fallback font loading in case Main didn't load them globally
         if (getClass().getClassLoader().getResource("digital.ttf") != null) {
             Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         }
@@ -97,6 +105,7 @@ public class GuiController implements Initializable {
             Font.loadFont(getClass().getClassLoader().getResource("PressStart2P-Regular.ttf").toExternalForm(), 38);
         }
 
+        // Configure grid spacing based on GameConfig constants
         gamePanel.setHgap(BOARD_GAP);
         gamePanel.setVgap(BOARD_GAP);
         brickPanel.setHgap(BOARD_GAP);
@@ -104,15 +113,22 @@ public class GuiController implements Initializable {
         ghostPanel.setHgap(BOARD_GAP);
         ghostPanel.setVgap(BOARD_GAP);
 
+        // Ensure the game panel can receive keyboard focus
         gamePanel.setFocusTraversable(true);
-        gamePanel.requestFocus();
 
+        // Initialize systems
         setupKeyControls();
         setupClock();
 
+        // Hide overlays initially
         gameOverPanel.setVisible(false);
     }
 
+    /**
+     * Sets up the independent game clock.
+     * This runs every 1 second to update the time label in the HUD.
+     * It uses integer division and modulo to format the time as MM:SS.
+     */
     private void setupClock() {
         clock = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             secondsPlayed++;
@@ -123,6 +139,7 @@ public class GuiController implements Initializable {
         clock.setCycleCount(Timeline.INDEFINITE);
     }
 
+    // Helper methods to control the clock from GameController
     public void startClock() { clock.play(); }
     public void stopClock() { clock.stop(); }
     public void resetClock() {
@@ -130,15 +147,22 @@ public class GuiController implements Initializable {
         timeLabel.setText("00:00");
     }
 
+    /**
+     * Configures keyboard event handling.
+     * This method maps specific keys (Arrows, WASD, Space, C, P) to game actions.
+     */
     private void setupKeyControls() {
         gamePanel.setOnKeyPressed(event -> {
+            // Prevent movement during the "3-2-1 GO!" sequence
             if (isCountdownRunning) return;
 
+            // Global Pause toggle
             if (event.getCode() == KeyCode.P || event.getCode() == KeyCode.ESCAPE) {
                 togglePause();
                 return;
             }
 
+            // Active Gameplay Controls
             if (!isPause.get() && !isGameOver.get()) {
                 if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.A)
                     refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
@@ -150,16 +174,22 @@ public class GuiController implements Initializable {
                 if (event.getCode() == KeyCode.DOWN || event.getCode() == KeyCode.S)
                     moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
 
+                // Hard Drop on Spacebar
                 if (event.getCode() == KeyCode.SPACE)
                     moveDown(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
 
+                // Hold Piece on 'C'
                 if (event.getCode() == KeyCode.C)
                     refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER)));
             }
+            // Debug key to start new game
             if (event.getCode() == KeyCode.N) newGame(null);
         });
     }
 
+    /**
+     * Handler for the on-screen Settings/Pause button (Cog icon).
+     */
     @FXML
     public void onPauseClicked(ActionEvent event) {
         if (isCountdownRunning) return;
@@ -169,6 +199,7 @@ public class GuiController implements Initializable {
         }
     }
 
+    // Toggles the pause state, stops timers, and shows the overlay menu
     private void togglePause() {
         if (isGameOver.get()) return;
         if (isPause.get()) {
@@ -187,9 +218,13 @@ public class GuiController implements Initializable {
         isPause.set(false);
         timeLine.play();
         clock.play();
-        gamePanel.requestFocus();
+        gamePanel.requestFocus(); // Return focus to grid for keyboard input
     }
 
+    /**
+     * Returns the user to the Main Menu.
+     * Handles stopping the game loop and loading the Start Menu FXML.
+     */
     @FXML
     public void returnToMenu(ActionEvent event) {
         timeLine.stop();
@@ -199,12 +234,12 @@ public class GuiController implements Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(location);
             Parent root = fxmlLoader.load();
 
-            // Handle case where event is null (called from GameOverPanel)
+            // Find the current stage to swap the scene
             Stage stage;
             if (event != null && event.getSource() instanceof Node) {
                 stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             } else {
-                // Fallback: use the gamePanel to find the scene
+                // Fallback if event is null (e.g. from Game Over panel)
                 stage = (Stage) gamePanel.getScene().getWindow();
             }
 
@@ -221,7 +256,12 @@ public class GuiController implements Initializable {
         System.exit(0);
     }
 
+    /**
+     * Initializes the visual grid of Rectangles for the game board.
+     * It creates the main grid, the active piece grid, and the ghost piece grid.
+     */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
+        // 1. Create Background Grid (Static blocks)
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
         for (int i = VISIBLE_ROW_OFFSET; i < boardMatrix.length; i++) {
             for (int j = 0; j < boardMatrix[i].length; j++) {
@@ -235,11 +275,13 @@ public class GuiController implements Initializable {
             }
         }
 
+        // 2. Create Active Piece Grid
         rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                 Rectangle r = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 r.setFill(getFillColor(brick.getBrickData()[i][j]));
+                // Set initial stroke transparency based on content
                 if (brick.getBrickData()[i][j] == 0) {
                     r.setStroke(Color.TRANSPARENT);
                 } else {
@@ -252,6 +294,7 @@ public class GuiController implements Initializable {
             }
         }
 
+        // 3. Create Ghost Piece Grid
         ghostRectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
@@ -267,10 +310,12 @@ public class GuiController implements Initializable {
         trailGroup = new Group();
         gameZone.getChildren().add(2, trailGroup);
 
+        // Initial UI Update
         updateBrickPanelPosition(brick);
         renderNextPiece(brick.getNextBrickData());
         renderHoldPiece(brick.getHoldBrickData());
 
+        // Set clipping mask for game area
         double boardWidth = COLS * BRICK_SIZE + (COLS - 1) * BOARD_GAP;
         double boardHeight = (ROWS - VISIBLE_ROW_OFFSET) * BRICK_SIZE + (ROWS - VISIBLE_ROW_OFFSET - 1) * BOARD_GAP;
         gameZone.setPrefSize(boardWidth, boardHeight);
@@ -279,6 +324,7 @@ public class GuiController implements Initializable {
         Rectangle clip = new Rectangle(0, 0, boardWidth, boardHeight);
         gameZone.setClip(clip);
 
+        // Initialize Main Game Loop
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(DROP_SPEED_MS),
                 ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
@@ -286,6 +332,10 @@ public class GuiController implements Initializable {
         timeLine.setCycleCount(Timeline.INDEFINITE);
     }
 
+    /**
+     * Renders the Held Piece in the side panel.
+     * Clears the previous grid and draws the new brick shape if one exists.
+     */
     private void renderHoldPiece(int[][] holdData) {
         holdPiecePanel.getChildren().clear();
         if (holdData == null) return;
@@ -312,11 +362,20 @@ public class GuiController implements Initializable {
         holdPiecePanel.getChildren().add(pieceGrid);
     }
 
+    /**
+     * Executes the "3-2-1 GO!" countdown animation before the game starts.
+     * Disables user input during the countdown.
+     */
     public void startCountdown(Runnable onFinished) {
-        isCountdownRunning = true;
+        isCountdownRunning = true; // Lock inputs
+
+        //Ensure game panel has focus so keyboard inputs work immediately
+        gamePanel.requestFocus();
+
         countdownLabel.setVisible(true);
         countdownLabel.setText("3");
 
+        // Chain of PauseTransitions to update the label every second
         PauseTransition pause1 = new PauseTransition(Duration.seconds(1));
         pause1.setOnFinished(e -> {
             countdownLabel.setText("2");
@@ -335,13 +394,15 @@ public class GuiController implements Initializable {
             countdownLabel.setStyle("-fx-text-fill: #00FF00; -fx-effect: dropshadow(three-pass-box, #00FF00, 50, 0, 0, 0); -fx-font-size: 150px; -fx-font-family: 'Let\\'s go Digital';");
         });
 
+        // Final cleanup after "GO!"
         PauseTransition pauseGo = new PauseTransition(Duration.seconds(0.5));
         pauseGo.setOnFinished(e -> {
             countdownLabel.setVisible(false);
-            isCountdownRunning = false;
+            isCountdownRunning = false; // Unlock inputs
             onFinished.run();
         });
 
+        // Start the chain
         pause1.play();
         pause1.setOnFinished(e -> {
             countdownLabel.setText("2");
@@ -368,6 +429,7 @@ public class GuiController implements Initializable {
         ghostPanel.setLayoutY(ghostY);
     }
 
+    // Displays the fading trail effect when a piece is hard-dropped
     public void showHardDropTrail(int startX, int startY, int distance, int[][] brickData) {
         for (int d = 0; d < distance; d++) {
             int yOffset = startY + d;
@@ -377,9 +439,7 @@ public class GuiController implements Initializable {
                     int colorId = brickData[row][col];
                     if (colorId != 0) {
                         Rectangle r = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-
                         Paint baseColor = getFillColor(colorId);
-
                         r.setFill(baseColor);
                         r.setOpacity(0.4);
                         r.setArcHeight(0);
@@ -434,6 +494,7 @@ public class GuiController implements Initializable {
         return COLORS[id];
     }
 
+    // Updates the visual state of the falling brick, ghost, next piece, and hold piece
     private void refreshBrick(ViewData brick) {
         if (!isPause.get()) {
             updateBrickPanelPosition(brick);
@@ -449,6 +510,7 @@ public class GuiController implements Initializable {
         }
     }
 
+    // Updates the static board background when a piece lands
     public void refreshGameBackground(int[][] board) {
         for (int i = VISIBLE_ROW_OFFSET; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -490,6 +552,7 @@ public class GuiController implements Initializable {
         }
     }
 
+    // Handles the movement tick event
     private void moveDown(MoveEvent event) {
         if (!isPause.get()) {
             DownData data;
@@ -499,6 +562,7 @@ public class GuiController implements Initializable {
                 data = eventListener.onDownEvent(event);
             }
 
+            // Check for line clears and show notification
             if (data.getClearRow() != null && data.getClearRow().getLinesRemoved() > 0) {
                 NotificationPanel panel = new NotificationPanel("+" + data.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(panel);
@@ -519,14 +583,15 @@ public class GuiController implements Initializable {
         linesLabel.textProperty().bind(scoreObj.linesClearedProperty().asString("%d"));
     }
 
+    // Shows the Game Over overlay and stops the game
     public void gameOver() {
         timeLine.stop();
         clock.stop();
-        // Call the new show method
         gameOverPanel.show(currentScoreProperty.get(), this);
         isGameOver.set(true);
     }
 
+    // Resets the game state for a new round
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
         clock.stop();

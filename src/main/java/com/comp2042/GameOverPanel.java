@@ -15,7 +15,6 @@ public class GameOverPanel extends VBox {
     private final Button btnMainMenu;
 
     public GameOverPanel() {
-        // Style the container
         this.setAlignment(Pos.CENTER);
         this.setSpacing(20);
         this.getStyleClass().add("game-over-box");
