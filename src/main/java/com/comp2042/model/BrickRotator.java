@@ -1,6 +1,4 @@
 /*
- * BrickRotator.java
- *
  * This class manages the rotation state of the active brick.
  * Since each brick can have multiple orientations (matrices), this class
  * tracks the current index and calculates the next one.
@@ -30,18 +28,33 @@ public class BrickRotator {
         return new NextShapeInfo(brick.getShapeMatrix().get(nextShape), nextShape);
     }
 
-    // Returns the 2D matrix for the current orientation
+
+
+    /**
+     * Retrieves the matrix representation of the brick in its current rotation.
+     *
+     * @return A 2D integer array representing the current shape.
+     */
     public int[][] getCurrentShape() {
         return brick.getShapeMatrix().get(currentShape);
     }
 
-    // Updates the state to a new rotation index.
-    // This is called only after the board confirms the move is valid.
+    /**
+     * Manually sets the current rotation index.
+     * This is used by the board to confirm a rotation after validating it with `getNextShape`.
+     *
+     * @param currentShape The new rotation index to set.
+     */
     public void setCurrentShape(int currentShape) {
         this.currentShape = currentShape;
     }
 
-    // Assigns a new brick to control and resets rotation to default (0)
+
+    /**
+     * Assigns a new brick to the rotator and resets the rotation index to 0.
+     *
+     * @param brick The new Brick object to control.
+     */
     public void setBrick(Brick brick) {
         this.brick = brick;
         currentShape = 0;

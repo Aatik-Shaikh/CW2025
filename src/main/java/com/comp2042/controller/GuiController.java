@@ -46,6 +46,12 @@ import java.util.ResourceBundle;
 
 import static com.comp2042.GameConfig.*;
 
+/**
+ * The Controller class for the main game interface (View).
+ * It is responsible for rendering the game state (grid, bricks, score), handling user input
+ * (keyboard events), and managing UI updates such as the timer and game-over screens.
+ * It acts as a bridge between the FXML layout and the game logic controller.
+ */
 public class GuiController implements Initializable {
 
     // --- FXML Bindings for UI Components ---
@@ -92,8 +98,11 @@ public class GuiController implements Initializable {
     /**
      * Initializes the controller class. This method is automatically called
      * after the FXML file has been loaded.
-     * * It sets up the grid layout, loads fonts (as a fallback), and initializes
-     * the input handling and game clock.
+     * It sets up the grid layout, loads resources like fonts, and configures
+     * input handling and the game clock.
+     *
+     * @param location  The location used to resolve relative paths for the root object, or null if unknown.
+     * @param resources The resources used to localize the root object, or null if not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -126,10 +135,9 @@ public class GuiController implements Initializable {
 
     /**
      * Sets up the independent game clock.
-     * This runs every 1 second to update the time label in the HUD.
-     * It uses integer division and modulo to format the time as MM:SS.
-     */
-    private void setupClock() {
+     * This timeline runs once per second to update the time label in the HUD
+     * (Heads-Up Display) with the MM:SS format.
+     */    private void setupClock() {
         clock = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             secondsPlayed++;
             int m = secondsPlayed / 60;
@@ -139,9 +147,24 @@ public class GuiController implements Initializable {
         clock.setCycleCount(Timeline.INDEFINITE);
     }
 
-    // Helper methods to control the clock from GameController
+
+
+    /**
+     * Starts the game clock timer.
+     * Should be called when the game begins or resumes.
+     */
     public void startClock() { clock.play(); }
+
+    /**
+     * Stops the game clock timer.
+     * Should be called when the game pauses or ends.
+     */
     public void stopClock() { clock.stop(); }
+
+    /**
+     * Resets the game clock to 00:00.
+     * Used when starting a new game.
+     */
     public void resetClock() {
         secondsPlayed = 0;
         timeLabel.setText("00:00");
@@ -188,7 +211,10 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Handler for the on-screen Settings/Pause button (Cog icon).
+     * Handles the click event for the on-screen Pause/Settings button.
+     * Toggles the pause state of the game if it is currently running.
+     *
+     * @param event The ActionEvent triggered by clicking the button.
      */
     @FXML
     public void onPauseClicked(ActionEvent event) {
@@ -199,7 +225,11 @@ public class GuiController implements Initializable {
         }
     }
 
-    // Toggles the pause state, stops timers, and shows the overlay menu
+    /**
+     * Toggles the game's pause state.
+     * Stops the game loop and clock if pausing, or resumes them if unpausing.
+     * Controls the visibility of the pause menu overlay.
+     */
     private void togglePause() {
         if (isGameOver.get()) return;
         if (isPause.get()) {
@@ -212,6 +242,12 @@ public class GuiController implements Initializable {
         }
     }
 
+    /**
+     * Resumes the game from a paused state.
+     * Hides the pause menu, restarts the timers, and refocuses the game grid for input.
+     *
+     * @param event The ActionEvent triggered by the "Resume" button.
+     */
     @FXML
     public void resumeGame(ActionEvent event) {
         pauseMenu.setVisible(false);
@@ -222,8 +258,10 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Returns the user to the Main Menu.
-     * Handles stopping the game loop and loading the Start Menu FXML.
+     * Returns the user to the Main Menu scene.
+     * Stops all running game loops and loads the Start Menu FXML.
+     *
+     * @param event The ActionEvent triggered by the "Main Menu" button.
      */
     @FXML
     public void returnToMenu(ActionEvent event) {
@@ -251,6 +289,12 @@ public class GuiController implements Initializable {
         }
     }
 
+
+    /**
+     * Exits the application completely.
+     *
+     * @param event The ActionEvent triggered by the "Quit" button.
+     */
     @FXML
     public void exitGame(ActionEvent event) {
         System.exit(0);
@@ -258,7 +302,11 @@ public class GuiController implements Initializable {
 
     /**
      * Initializes the visual grid of Rectangles for the game board.
-     * It creates the main grid, the active piece grid, and the ghost piece grid.
+     * Creates the background grid, the active brick grid, and the ghost piece grid
+     * based on the initial game state.
+     *
+     * @param boardMatrix The initial 2D array representation of the static board.
+     * @param brick       The initial state of the active brick.
      */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         // 1. Create Background Grid (Static blocks)
@@ -333,8 +381,10 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Renders the Held Piece in the side panel.
-     * Clears the previous grid and draws the new brick shape if one exists.
+     * Renders the "Hold Piece" preview in the side panel.
+     * Clears the previous preview and draws the new brick shape if one is held.
+     *
+     * @param holdData A 2D array representing the shape of the held brick, or null if empty.
      */
     private void renderHoldPiece(int[][] holdData) {
         holdPiecePanel.getChildren().clear();
@@ -363,8 +413,10 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Executes the "3-2-1 GO!" countdown animation before the game starts.
-     * Disables user input during the countdown.
+     * Executes the "3-2-1 GO!" countdown animation.
+     * Blocks user input during the sequence and executes a callback when finished.
+     *
+     * @param onFinished A Runnable to execute when the countdown completes (usually starting the game loop).
      */
     public void startCountdown(Runnable onFinished) {
         isCountdownRunning = true; // Lock inputs
@@ -418,6 +470,13 @@ public class GuiController implements Initializable {
         });
     }
 
+
+    /**
+     * Updates the position of the active brick and ghost piece in the UI.
+     * Moves the GridPane containers to match the logical coordinates.
+     *
+     * @param brick The current data for the active brick, including X/Y coordinates.
+     */
     private void updateBrickPanelPosition(ViewData brick) {
         double x = brick.getxPosition() * (BRICK_SIZE + BOARD_GAP);
         double y = (brick.getyPosition() - VISIBLE_ROW_OFFSET) * (BRICK_SIZE + BOARD_GAP);
@@ -429,7 +488,16 @@ public class GuiController implements Initializable {
         ghostPanel.setLayoutY(ghostY);
     }
 
-    // Displays the fading trail effect when a piece is hard-dropped
+
+    /**
+     * Displays a temporary visual trail when a piece is "Hard Dropped".
+     * Creates fading rectangles to indicate the path the brick traveled.
+     *
+     * @param startX    The starting X coordinate of the drop.
+     * @param startY    The starting Y coordinate of the drop.
+     * @param distance  The number of rows the brick dropped.
+     * @param brickData The shape matrix of the brick.
+     */
     public void showHardDropTrail(int startX, int startY, int distance, int[][] brickData) {
         for (int d = 0; d < distance; d++) {
             int yOffset = startY + d;
@@ -464,6 +532,13 @@ public class GuiController implements Initializable {
         }
     }
 
+
+    /**
+     * Renders the "Next Piece" preview in the side panel.
+     * Displays the upcoming bricks to help the player plan ahead.
+     *
+     * @param nextPieces A list of matrices representing the shapes of the next bricks.
+     */
     private void renderNextPiece(List<int[][]> nextPieces) {
         nextPiecePanel.getChildren().clear();
         for (int[][] nextData : nextPieces) {
@@ -489,12 +564,25 @@ public class GuiController implements Initializable {
         }
     }
 
+
+    /**
+     * Retrieves the Paint (Color or Gradient) associated with a specific brick ID.
+     *
+     * @param id The integer ID of the brick type (e.g., 1 for I-Piece, 2 for J-Piece).
+     * @return The JavaFX Paint object to fill the rectangle.
+     */
     private Paint getFillColor(int id) {
         if (id < 0 || id >= COLORS.length) return Color.WHITE;
         return COLORS[id];
     }
 
-    // Updates the visual state of the falling brick, ghost, next piece, and hold piece
+
+    /**
+     * Refreshes the visual state of dynamic game elements.
+     * Updates the active brick, ghost piece, next piece preview, and hold piece preview.
+     *
+     * @param brick The current snapshot of the game data (ViewData).
+     */
     private void refreshBrick(ViewData brick) {
         if (!isPause.get()) {
             updateBrickPanelPosition(brick);
@@ -510,7 +598,12 @@ public class GuiController implements Initializable {
         }
     }
 
-    // Updates the static board background when a piece lands
+    /**
+     * Updates the static background grid.
+     * Called when a piece lands and becomes part of the board, requiring a redraw of the static blocks.
+     *
+     * @param board The updated 2D array of the board state.
+     */
     public void refreshGameBackground(int[][] board) {
         for (int i = VISIBLE_ROW_OFFSET; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -525,6 +618,14 @@ public class GuiController implements Initializable {
         }
     }
 
+
+    /**
+     * Helper method to configure the properties of a single block (Rectangle).
+     * Sets the color and stroke (border) based on the block type.
+     *
+     * @param color The color ID of the block.
+     * @param r     The JavaFX Rectangle object to update.
+     */
     private void setRectangleData(int color, Rectangle r) {
         r.setFill(getFillColor(color));
         r.setArcHeight(0);
@@ -536,6 +637,14 @@ public class GuiController implements Initializable {
         }
     }
 
+
+    /**
+     * Helper method to configure the Ghost Piece blocks.
+     * Sets them to be semi-transparent to distinguish them from the real piece.
+     *
+     * @param colorId The color ID of the ghost block.
+     * @param r       The JavaFX Rectangle object to update.
+     */
     private void setGhostRectangleData(int colorId, Rectangle r) {
         if (colorId != 0) {
             r.setVisible(true);
@@ -552,7 +661,15 @@ public class GuiController implements Initializable {
         }
     }
 
-    // Handles the movement tick event
+
+
+    /**
+     * Handles the logic for the "Move Down" action (tick).
+     * checks for game updates, handles line clearing animations/notifications,
+     * and refreshes the view.
+     *
+     * @param event The move event triggering this action.
+     */
     private void moveDown(MoveEvent event) {
         if (!isPause.get()) {
             DownData data;
@@ -573,17 +690,34 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
+
+    /**
+     * Binds the UI Score Label to the Score property in the model.
+     * Ensures the score updates automatically on screen when the value changes.
+     *
+     * @param score The IntegerProperty representing the player's score.
+     */
     public void bindScore(IntegerProperty score) {
         scoreLabel.textProperty().bind(score.asString("%d"));
         this.currentScoreProperty = score;
     }
 
+
+    /**
+     * Binds additional UI labels (Level, Lines) to the model properties.
+     *
+     * @param scoreObj The Score object containing the level and lines properties.
+     */
     public void bindExtraStats(Score scoreObj) {
         levelLabel.textProperty().bind(scoreObj.levelProperty().asString("%d"));
         linesLabel.textProperty().bind(scoreObj.linesClearedProperty().asString("%d"));
     }
 
-    // Shows the Game Over overlay and stops the game
+
+    /**
+     * Triggers the Game Over state in the UI.
+     * Stops the game loop and clock, and displays the Game Over overlay panel.
+     */
     public void gameOver() {
         timeLine.stop();
         clock.stop();
@@ -591,7 +725,13 @@ public class GuiController implements Initializable {
         isGameOver.set(true);
     }
 
-    // Resets the game state for a new round
+
+    /**
+     * Resets the UI and starts a new game session.
+     * Clears overlays, resets the clock, and notifies the event listener to reset the model.
+     *
+     * @param actionEvent The event triggering the new game (can be null).
+     */
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
         clock.stop();
@@ -607,14 +747,34 @@ public class GuiController implements Initializable {
         isGameOver.set(false);
     }
 
+
+    /**
+     * Registers the input event listener.
+     * Connects this View to the GameController which handles the logic.
+     *
+     * @param listener The InputEventListener implementation (GameController).
+     */
     public void setEventListener(InputEventListener listener) {
         this.eventListener = listener;
     }
 
+
+    /**
+     * Retrieves the main game loop timeline.
+     * Used by the controller to adjust game speed.
+     *
+     * @return The JavaFX Timeline object controlling the game loop.
+     */
     public Timeline getTimeline() {
         return timeLine;
     }
 
+
+    /**
+     * Forcefully refocuses the game panel to ensure keyboard inputs are detected.
+     *
+     * @param actionEvent The event triggering the focus request.
+     */
     public void pauseGame(ActionEvent actionEvent) {
         gamePanel.requestFocus();
     }

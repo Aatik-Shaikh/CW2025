@@ -1,12 +1,6 @@
-/*
- * This utility class contains static methods for performing matrix-based calculations.
- * It handles the fundamental "physics" of the game, including collision detection,
- * boundary checking, and the logic for clearing completed lines.
- *
- * Design Note:
- * This class is stateless. It does not hold game data but operates on data passed to it.
- * This separation of concerns makes the logic easier to test (as seen in MatrixOperationsTest)
- * and reuses code across different parts of the application.
+/**
+ * A utility class providing static methods for matrix manipulations.
+ * It handles collision detection, merging bricks into the board, and clearing full rows.
  */
 package com.comp2042;
 
@@ -72,10 +66,13 @@ public class MatrixOperations {
     }
 
     /**
-     * Merges the falling brick into the background grid.
-     * This is called when a brick lands and becomes part of the static board.
+     * Merges a brick into the background grid (locking it in place).
      *
-     * @return A new grid matrix containing the merged blocks.
+     * @param filledFields The current board matrix.
+     * @param brick        The brick matrix to merge.
+     * @param x            The x-position.
+     * @param y            The y-position.
+     * @return A new matrix with the brick merged.
      */
     public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) {
         int[][] copy = copy(filledFields);
@@ -92,12 +89,10 @@ public class MatrixOperations {
     }
 
     /**
-     * Scans the board for full rows, removes them, and shifts the remaining rows down.
-     * This method implements the core Tetris scoring mechanic.
+     * Checks for and removes any fully filled rows from the board.
      *
-     * @param matrix The current game board.
-     * @return A ClearRow object containing the new board state, the number of lines removed,
-     * and the calculated score bonus.
+     * @param matrix The current board matrix.
+     * @return A {@link ClearRow} object containing the new matrix and score details.
      */
     public static ClearRow checkRemoving(final int[][] matrix) {
         int[][] tmp = new int[matrix.length][matrix[0].length];
@@ -137,7 +132,12 @@ public class MatrixOperations {
         return new ClearRow(clearedRows.size(), tmp, scoreBonus);
     }
 
-    // Deep copies a list of matrices, used for the "Next Piece" preview logic
+    /**
+     * Creates a deep copy of a list of matrices.
+     *
+     * @param list The list to copy.
+     * @return A new list containing independent copies of the arrays.
+     */
     public static List<int[][]> deepCopyList(List<int[][]> list){
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
     }

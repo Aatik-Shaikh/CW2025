@@ -1,8 +1,6 @@
-/*
- *
- * This utility class manages the persistence of high scores for the game.
- * It is responsible for reading from and writing to a local text file ("highscores.txt").
- *
+/**
+ * Manages the persistence of high scores to a local file.
+ * It handles reading, writing, sorting, and limiting the high score list.
  */
 package com.comp2042;
 
@@ -50,11 +48,10 @@ public class HighScoreManager {
     }
 
     /**
-     * Adds a new score to the high score list.
-     * This method loads the existing scores, adds the new one, re-sorts the list,
-     * trims it to the maximum size, and then saves the result back to the file.
+     * Adds a new score to the high score list if it qualifies.
+     * It updates the file with the new top 3 scores.
      *
-     * @param newScore The score achieved by the player in the current session.
+     * @param newScore The score achieved in the recent game.
      */
     public static void addScore(int newScore) {
         List<Integer> scores = getTopScores();

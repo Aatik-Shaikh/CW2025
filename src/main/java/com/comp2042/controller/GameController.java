@@ -63,13 +63,27 @@ public class GameController implements InputEventListener {
     }
 
 
-    //Handles the Hold Piece event triggered by the user
+    /**
+     * Handles the 'Hold Piece' event triggered by the user.
+     * Delegates the logic to the board model to swap the current brick with the held brick.
+     *
+     * @param event The move event details.
+     * @return The updated ViewData to refresh the UI with the new active and held pieces.
+     */
     @Override
     public ViewData onHoldEvent(MoveEvent event) {
         board.holdBrick();
         return board.getViewData();
     }
 
+    /**
+     * Handles the 'Down' movement event from the game loop or user input.
+     * Moves the piece down; if it lands, it locks the piece, clears lines, updates the score,
+     * and spawns a new brick. Checks for Game Over condition if a new brick cannot spawn.
+     *
+     * @param event The move event details.
+     * @return A DownData object containing information about cleared rows and the new board state.
+     */
     @Override
     public DownData onDownEvent(MoveEvent event) {
         boolean canMove = board.moveBrickDown();
@@ -97,7 +111,15 @@ public class GameController implements InputEventListener {
         return new DownData(clearRow, board.getViewData());
     }
 
-    // Process the Hard Drop event
+
+    /**
+     * Handles the 'Hard Drop' event (Spacebar).
+     * Instantly drops the current brick to the bottom, calculates the score based on distance dropped,
+     * locks the piece, and triggers line clearing logic.
+     *
+     * @param event The move event details.
+     * @return A DownData object reflecting the board state after the drop and clear.
+     */
     @Override
     public DownData onHardDropEvent(MoveEvent event) {
         ViewData currentView = board.getViewData();
@@ -129,29 +151,52 @@ public class GameController implements InputEventListener {
         return new DownData(clearRow, board.getViewData());
     }
 
-    // Handles movement to the left
+
+    /**
+     * Handles the request to move the brick to the left.
+     * Delegates the move to the board model and returns the updated view data.
+     *
+     * @param event The move event details.
+     * @return The updated ViewData showing the brick's new position.
+     */
     @Override
     public ViewData onLeftEvent(MoveEvent event) {
         board.moveBrickLeft();
         return board.getViewData();
     }
 
-    // Handles movement to the right
+    /**
+     * Handles the request to move the brick to the right.
+     * Delegates the move to the board model and returns the updated view data.
+     *
+     * @param event The move event details.
+     * @return The updated ViewData showing the brick's new position.
+     */
     @Override
     public ViewData onRightEvent(MoveEvent event) {
         board.moveBrickRight();
         return board.getViewData();
     }
 
-    // Handles rotation
+
+    /**
+     * Handles the request to rotate the brick.
+     * Delegates the rotation logic (including wall kicks) to the board model.
+     *
+     * @param event The move event details.
+     * @return The updated ViewData showing the brick's new orientation.
+     */
     @Override
     public ViewData onRotateEvent(MoveEvent event) {
         board.rotateLeftBrick();
         return board.getViewData();
     }
 
-    // Resets the game state to start a new session
-    @Override
+
+    /**
+     * Resets the game state to start a new session.
+     * Clears the board, resets the score and level, and refreshes the background grid.
+     */    @Override
     public void createNewGame() {
         board.newGame();
         viewGuiController.refreshGameBackground(board.getBoardMatrix());

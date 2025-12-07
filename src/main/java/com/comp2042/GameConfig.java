@@ -1,14 +1,6 @@
-/*
- * GameConfig.java
- *
- * This class serves as the central configuration repository for the application.
- * It defines global constants and settings used throughout the game, such as
- * board dimensions, animation speeds, and visual styling parameters.
- *
- * Key Refactoring Feature: Encapsulation
- * The 'START_LEVEL' variable is encapsulated (private static) with public
- * getter and setter methods. This ensures that the game state can only be
- * modified through controlled access points, protecting the integrity of the data.
+/**
+ * A central configuration class holding global game constants and state.
+ * It manages grid dimensions, colors, animation speeds, and the user's selected difficulty level.
  */
 package com.comp2042;
 
@@ -19,7 +11,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.paint.Stop;
 
 public final class GameConfig {
-
+    // ... constants ...
     // --- Grid Dimensions ---
     // The standard Tetris board is 10 columns wide and typically 20-22 rows high visible.
     // Extra rows are added at the top for spawning new pieces.

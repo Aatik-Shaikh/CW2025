@@ -79,19 +79,39 @@ public class SimpleBoard implements Board {
         return attemptMove(0, 1);
     }
 
+
+    /**
+     * Attempts to move the active brick one column to the left.
+     * Checks for collisions with the left wall or existing blocks.
+     *
+     * @return true if the move was successful, false otherwise.
+     */
     @Override
     public boolean moveBrickLeft() {
         return attemptMove(-1, 0);
     }
 
+
+    /**
+     * Attempts to move the active brick one column to the right.
+     * Checks for collisions with the right wall or existing blocks.
+     *
+     * @return true if the move was successful, false otherwise.
+     */
     @Override
     public boolean moveBrickRight() {
         return attemptMove(1, 0);
     }
 
-    // Rotates the brick to the left (counter-clockwise).
-    // Includes "Wall Kick" logic: if a rotation hits a wall, the code tries
-    // to shove the brick slightly to the side to make it fit.
+
+
+    /**
+     * Rotates the active brick 90 degrees counter-clockwise.
+     * Implements wall-kick logic: if the rotation causes a collision, it attempts to
+     * shift the brick left or right to find a valid position.
+     *
+     * @return true if rotation succeeded (possibly with a kick); false if no valid position was found.
+     */
     @Override
     public boolean rotateLeftBrick() {
         int[][] board = MatrixOperations.copy(matrix);
@@ -120,7 +140,12 @@ public class SimpleBoard implements Board {
         return false;
     }
 
-    // Hard drop: keeps moving the brick down until it hits something
+
+    /**
+     * Instantly drops the brick to the lowest valid position in its current column.
+     *
+     * @return The number of rows the brick was dropped.
+     */
     @Override
     public int dropBrickToBottom() {
         int dropped = 0;
@@ -130,6 +155,13 @@ public class SimpleBoard implements Board {
         return dropped;
     }
 
+
+    /**
+     * Spawns a new active brick at the top center of the board.
+     * Also resets the hold permission for the new turn.
+     *
+     * @return true if the brick spawned successfully; false if it collided immediately (Game Over).
+     */
     @Override
     public boolean createNewBrick() {
         // Get the next brick from the generator (Random or Stub)
@@ -185,12 +217,23 @@ public class SimpleBoard implements Board {
         return result;
     }
 
+    /**
+     * Retrieves the current state of the entire game board grid.
+     *
+     * @return A 2D integer array representing the grid, where 0 is empty and other numbers are color IDs.
+     */
     @Override
     public int[][] getBoardMatrix() {
         return matrix;
     }
 
-    // Packages all necessary game data to send to the GUI for rendering
+
+    /**
+     * Compiles all necessary game state data into a Data Transfer Object for the View.
+     * This includes the active brick, ghost position, next pieces, and hold piece.
+     *
+     * @return A immutable ViewData object.
+     */
     @Override
     public ViewData getViewData() {
         // Get previews of the next 3 bricks
@@ -213,12 +256,22 @@ public class SimpleBoard implements Board {
         return new ViewData(rot.getCurrentShape(), p.x, p.y, ghostY, shapes, holdData);
     }
 
+
+    /**
+     * Retrieves the Score model associated with this board.
+     *
+     * @return The Score object tracking points, lines, and levels.
+     */
     @Override
     public Score getScore() {
         return score;
     }
 
-    // Resets the board for a new game session
+
+    /**
+     * Resets the board state for a completely new game.
+     * Clears the matrix, resets the score, clears the hold slot, and spawns the first brick.
+     */
     @Override
     public void newGame() {
         matrix = new int[GameConfig.ROWS][GameConfig.COLS];

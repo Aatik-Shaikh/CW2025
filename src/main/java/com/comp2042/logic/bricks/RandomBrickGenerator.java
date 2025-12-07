@@ -44,12 +44,26 @@ public class RandomBrickGenerator implements BrickGenerator {
         return nextBricks.poll();
     }
 
+
+    /**
+     * Peeks at the next brick in the queue without removing it.
+     *
+     * @return The next Brick object that will be spawned.
+     */
     @Override
     public Brick getNextBrick() {
         // Peek at the next brick without removing it (useful for logic checks)
         return nextBricks.peek();
     }
 
+
+    /**
+     * Retrieves a list of upcoming bricks from the queue for preview purposes.
+     * Ensures the queue has enough bricks to satisfy the request before returning.
+     *
+     * @param count The number of future bricks to retrieve.
+     * @return A list of the next 'count' Brick objects.
+     */
     @Override
     public List<Brick> getNextBricks(int count) {
         // Ensure enough bricks are in the queue to satisfy the request

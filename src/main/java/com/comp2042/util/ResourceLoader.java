@@ -1,3 +1,8 @@
+/**
+ * Utility class for loading external resources (fonts, images).
+ * Prevents runtime errors by handling null streams safely.
+ */
+
 package com.comp2042.util;
 
 import javafx.scene.text.Font;

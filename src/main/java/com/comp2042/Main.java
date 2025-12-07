@@ -1,3 +1,8 @@
+/**
+ * The entry point for the Tetris application.
+ * This class initializes the JavaFX platform, loads external resources, and launches the application window.
+ */
+
 package com.comp2042;
 
 import com.comp2042.util.ResourceLoader;
@@ -10,6 +15,13 @@ import java.net.URL;
 
 public class Main extends Application {
 
+    /**
+     * Starts the primary stage of the application.
+     * It loads the Start Menu FXML and sets up the initial scene.
+     *
+     * @param primaryStage The primary window for this application.
+     * @throws Exception If the FXML resource cannot be found or loaded.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         ResourceLoader.loadResources();
@@ -34,7 +46,11 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    // Standard main method to launch the JavaFX application
+    /**
+     * The main method that launches the JavaFX application.
+     *
+     * @param args Command line arguments.
+     */
     public static void main(String[] args) {
         launch(args);
     }

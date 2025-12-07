@@ -52,18 +52,43 @@ public final class ViewData {
         return MatrixOperations.copy(brickData);
     }
 
+
+    /**
+     * Retrieves the current x-coordinate of the active brick.
+     *
+     * @return The column index of the brick's top-left corner.
+     */
     public int getxPosition() {
         return xPosition;
     }
 
+
+    /**
+     * Retrieves the current y-coordinate of the active brick.
+     *
+     * @return The row index of the brick's top-left corner.
+     */
     public int getyPosition() {
         return yPosition;
     }
 
+
+    /**
+     * Retrieves the calculated y-coordinate for the "Ghost" piece.
+     * This indicates where the brick would land if dropped instantly.
+     *
+     * @return The row index for the ghost piece.
+     */
     public int getGhostYPosition() {
         return ghostYPosition;
     }
 
+
+    /**
+     * Retrieves the list of upcoming bricks for the preview panel.
+     *
+     * @return A list of 2D arrays representing the shapes of the next bricks.
+     */
     public List<int[][]> getNextBrickData() {
         // Return a deep copy of the list to protect internal state
         List<int[][]> copy = new ArrayList<>();
@@ -73,7 +98,12 @@ public final class ViewData {
         return copy;
     }
 
-    // Accessor for the Hold Piece view
+
+    /**
+     * Retrieves the shape data of the currently held brick.
+     *
+     * @return A 2D integer array representing the held brick, or null if no brick is held.
+     */
     public int[][] getHoldBrickData() {
         return holdBrickData != null ? MatrixOperations.copy(holdBrickData) : null;
     }

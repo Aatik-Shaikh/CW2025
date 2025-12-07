@@ -1,6 +1,4 @@
 /*
- * MenuController.java
- *
  * This class controls the Start Menu screen logic.
  * It manages the user's interaction with the "Play", "Quit", and "Settings" buttons.
  *
@@ -62,19 +60,37 @@ public class MenuController implements Initializable {
         updateLevelDisplay();
     }
 
-    // Opens the settings overlay panel
+
+    /**
+     * Opens the settings overlay panel.
+     * Makes the settings VBox visible to the user.
+     *
+     * @param event The action event triggered by the settings button.
+     */
     @FXML
     public void openSettings(ActionEvent event) {
         settingsPanel.setVisible(true);
     }
 
-    // Closes the settings overlay panel
+
+    /**
+     * Closes the settings overlay panel.
+     * Hides the settings VBox.
+     *
+     * @param event The action event triggered by the close button.
+     */
     @FXML
     public void closeSettings(ActionEvent event) {
         settingsPanel.setVisible(false);
     }
 
-    // Handles the user clicking a specific level button (1, 2, or 3)
+
+    /**
+     * Updates the game difficulty level based on the user's selection.
+     * Highlights the selected button and updates the global GameConfig.
+     *
+     * @param event The action event triggered by a level button click.
+     */
     @FXML
     public void setLevel(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
@@ -103,7 +119,13 @@ public class MenuController implements Initializable {
         selectedLevelLabel.setText("Selected: Speed " + GameConfig.getStartLevel());
     }
 
-    // Handles the "PLAY" button click event
+
+    /**
+     * Handles the 'Play' button click.
+     * Loads the main game layout FXML, initializes the GameController, and switches the scene.
+     *
+     * @param event The action event triggered by the play button.
+     */
     @FXML
     public void onPlay(ActionEvent event) {
         try {
@@ -128,6 +150,13 @@ public class MenuController implements Initializable {
         }
     }
 
+
+    /**
+     * Handles the 'Quit' button click.
+     * Terminates the application.
+     *
+     * @param event The action event triggered by the quit button.
+     */
     @FXML
     public void onQuit(ActionEvent event) {
         System.exit(0);

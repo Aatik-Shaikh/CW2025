@@ -16,7 +16,7 @@
     <Group>
         <Pane prefWidth="600" prefHeight="700">
 
-            <VBox layoutX="10" layoutY="210" spacing="30" alignment="TOP_CENTER" prefWidth="160">
+            <VBox layoutX="15" layoutY="210" spacing="30" alignment="TOP_CENTER" prefWidth="140">
                 <VBox alignment="CENTER" spacing="-5">
                     <Label text="SCORE:" styleClass="hud-header"/>
                     <Label fx:id="scoreLabel" text="0" styleClass="hud-value"/>

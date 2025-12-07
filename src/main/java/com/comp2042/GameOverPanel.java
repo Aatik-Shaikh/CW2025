@@ -1,3 +1,8 @@
+/**
+ * A custom UI component representing the Game Over screen.
+ * It displays the final score, high scores, and buttons to restart or exit.
+ */
+
 package com.comp2042;
 
 import com.comp2042.controller.GuiController;
@@ -68,6 +73,13 @@ public class GameOverPanel extends VBox {
         this.getChildren().addAll(title, scoreLabel, hsBox, buttonBox);
     }
 
+
+    /**
+     * Displays the game over screen with updated score information.
+     *
+     * @param score      The final score of the game.
+     * @param controller The GuiController to handle button actions (Restart/Menu).
+     */
     public void show(int score, GuiController controller) {
         // Update Score
         scoreLabel.setText("FINAL SCORE: " + score);

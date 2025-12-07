@@ -1,6 +1,4 @@
 /*
- * Score.java
- *
  * This class represents the player's progress in the game.
  * It tracks the current score, the current level, and the total lines cleared.
  *
@@ -32,17 +30,48 @@ public final class Score {
     // Scaling factor: Level up every 10 lines
     private static final int LINES_PER_LEVEL = 10;
 
-    // Getters for the properties themselves (for UI binding)
+
+    /**
+     * Retrieves the observable property for the current score.
+     * Used for binding the score label in the UI.
+     *
+     * @return The IntegerProperty representing the score.
+     */
     public IntegerProperty scoreProperty() { return score; }
+
+    /**
+     * Retrieves the observable property for the current level.
+     * Used for binding the level label in the UI.
+     *
+     * @return The IntegerProperty representing the level.
+     */
     public IntegerProperty levelProperty() { return level; }
+
+    /**
+     * Retrieves the observable property for the total lines cleared.
+     * Used for binding the lines label in the UI.
+     *
+     * @return The IntegerProperty representing lines cleared.
+     */
     public IntegerProperty linesClearedProperty() { return linesCleared; }
 
-    // Adds points to the total score
+
+    /**
+     * Adds a specific amount of points to the total score.
+     *
+     * @param points The number of points to add.
+     */
     public void add(int points) {
         score.set(score.get() + points);
     }
 
-    // Records cleared lines and checks if the player should level up
+
+    /**
+     * Increments the count of cleared lines and checks for level-up conditions.
+     * If the threshold is met, the level property is incremented.
+     *
+     * @param lines The number of lines to add.
+     */
     public void addLines(int lines) {
         linesCleared.set(linesCleared.get() + lines);
 

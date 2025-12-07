@@ -1,16 +1,6 @@
-/*
- * This class implements the Factory Method Design Pattern.
- *
- * Purpose:
- * It encapsulates the logic for instantiating concrete Brick objects (IBrick, JBrick, etc.).
- * Instead of using the 'new' keyword scattered throughout the code (specifically in the generator),
- * the application delegates creation to this factory.
- *
- * Benefits:
- * 1. Decoupling: The client code (RandomBrickGenerator) does not need to know the specific
- * class names of the bricks, only the interface 'Brick'.
- * 2. Scalability: Adding a new brick type in the future only requires updating this single file,
- * adhering to the Open/Closed Principle.
+/**
+ * A Factory class for creating Brick objects.
+ * Decouples brick instantiation from the game logic using integer IDs.
  */
 package com.comp2042.logic.bricks;
 

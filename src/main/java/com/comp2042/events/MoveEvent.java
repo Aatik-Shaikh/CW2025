@@ -1,20 +1,10 @@
-/*
- *
- * This class acts as a data carrier object (DTO) for game events.
- * It encapsulates the details of a specific action occurring in the game,
- * such as a brick moving down or rotating.
- *
- * Purpose:
- * By bundling the event type and the event source together, this class allows
- * the game logic to distinguish between:
- * 1. User-initiated actions (pressing a key).
- * 2. System-initiated actions (gravity/game loop).
- *
- * This distinction is crucial for scoring, as points are often awarded for
- * manual drops but not for automatic falling.
- */
+
 package com.comp2042.events;
 
+/**
+ * A Data Transfer Object (DTO) representing a movement request within the game.
+ * It encapsulates the type of movement (e.g., LEFT, ROTATE) and the source of the event (USER or THREAD).
+ */
 public final class MoveEvent {
 
     // The specific type of movement (e.g., DOWN, LEFT, ROTATE)
@@ -25,18 +15,30 @@ public final class MoveEvent {
 
     /**
      * Constructs a new MoveEvent.
-     * * @param eventType   The type of action being performed.
-     * @param eventSource The source that triggered this action.
+     *
+     * @param eventType   The type of action being performed (e.g., DOWN, ROTATE).
+     * @param eventSource The source that triggered this action (USER or THREAD).
      */
     public MoveEvent(EventType eventType, EventSource eventSource) {
         this.eventType = eventType;
         this.eventSource = eventSource;
     }
 
+
+    /**
+     * Retrieves the type of movement associated with this event.
+     *
+     * @return The EventType enum value (e.g., LEFT, RIGHT, HARD_DROP).
+     */
     public EventType getEventType() {
         return eventType;
     }
 
+    /**
+     * Retrieves the source that triggered this event.
+     *
+     * @return The EventSource enum value (USER or THREAD).
+     */
     public EventSource getEventSource() {
         return eventSource;
     }
