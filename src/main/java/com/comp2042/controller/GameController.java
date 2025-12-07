@@ -1,4 +1,3 @@
-
 /*
  * This class acts as the central logic coordinator for the game.
  * It implements the InputEventListener interface to react to user actions
@@ -11,10 +10,6 @@
  * 4. Handling special mechanics like Hard Drop and Hold Piece.
  * 5. Detecting Game Over conditions and high score updates.
  */
-
-
-
-
 package com.comp2042.controller;
 
 import com.comp2042.*;
@@ -84,10 +79,8 @@ public class GameController implements InputEventListener {
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
 
-            if (clearRow.getLinesRemoved() > 0) {
-                board.getScore().add(clearRow.getScoreBonus());
-                board.getScore().addLines(clearRow.getLinesRemoved());
-            }
+            // Delegates score calculation to the Score model to handle combo multipliers
+            board.getScore().processLineClear(clearRow.getLinesRemoved(), clearRow.getScoreBonus());
 
             if (board.createNewBrick()) {
                 HighScoreManager.addScore(board.getScore().scoreProperty().get());
@@ -124,10 +117,8 @@ public class GameController implements InputEventListener {
         board.mergeBrickToBackground();
         ClearRow clearRow = board.clearRows();
 
-        if (clearRow.getLinesRemoved() > 0) {
-            board.getScore().add(clearRow.getScoreBonus());
-            board.getScore().addLines(clearRow.getLinesRemoved());
-        }
+        // Delegates score calculation to the Score model to handle combo multipliers
+        board.getScore().processLineClear(clearRow.getLinesRemoved(), clearRow.getScoreBonus());
 
         if (board.createNewBrick()) {
             HighScoreManager.addScore(board.getScore().scoreProperty().get());

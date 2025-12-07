@@ -26,6 +26,9 @@ public final class Score {
 
     private final IntegerProperty linesCleared = new SimpleIntegerProperty(0);
 
+    // Tracks the number of lines cleared in consecutive moves for combo logic
+    private int consecutiveLines = 0;
+
     // Scaling factor: Level up every 10 lines
     private static final int LINES_PER_LEVEL = 10;
 
@@ -49,11 +52,28 @@ public final class Score {
         }
     }
 
+    // Handles the logic for line clears, including the combo multiplier
+    public void processLineClear(int lines, int scoreBonus) {
+        if (lines > 0) {
+            consecutiveLines += lines;
+            // Applies a 1.5x multiplier if the user has cleared 5 or more lines consecutively
+            if (consecutiveLines >= 5) {
+                scoreBonus = (int) (scoreBonus * 1.5);
+            }
+            add(scoreBonus);
+            addLines(lines);
+        } else {
+            // Resets the streak if a piece lands without clearing any lines
+            consecutiveLines = 0;
+        }
+    }
+
     // Resets all stats to their starting values for a new game
     public void reset() {
         score.set(0);
         // Ensure the level resets to the user's selected start level, not just 1
         level.set(GameConfig.getStartLevel());
         linesCleared.set(0);
+        consecutiveLines = 0;
     }
 }
